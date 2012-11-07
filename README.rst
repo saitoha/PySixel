@@ -59,6 +59,13 @@ Reference
  - Chris_F_Chiesa, 1990 : All About SIXELs
    ftp://ftp.cs.utk.edu/pub/shuford/terminal/all_about_sixels.txt
 
- - vt100.net
-   http://vt100.net/
+ - Netpbm http://netpbm.sourceforge.net/
+
+   It includes ppmtosixel command
+   http://netpbm.sourceforge.net/doc/ppmtosixel.html
+
+ - vt100.net http://vt100.net/
+
+   DECDLD
+   http://vt100.net/docs/vt510-rm/DECDLD
 

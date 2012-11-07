@@ -24,7 +24,7 @@ setup(name                  = 'PySixel',
       packages              = find_packages(exclude=[]),
       zip_safe              = True,
       include_package_data  = False,
-      install_requires      = ['PIL'],
+      install_requires      = ['PIL', 'tff >=0.0.3, <=0.0.3'],
       entry_points          = """
                               [console_scripts]
                               sixelconv = sixel:main
