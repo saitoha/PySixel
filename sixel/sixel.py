@@ -1,143 +1,25 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# ***** BEGIN LICENSE BLOCK *****
+# Copyright (C) 2012  Hayaki Saito <user@zuse.jp>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# ***** END LICENSE BLOCK *****
 
-import sys, os, termios, select
-try:
-    from CStringIO import StringIO
-except:
-    from StringIO import StringIO
-
-class SixelConverter:
-
-    def __init__(self, image, f8bit = False):
-
-        if f8bit: # 8bit mode
-            self.DCS='\x90'
-            self.ST='\x9c'
-        else:
-            self.DCS='\x1bP'
-            self.ST='\x1b\\'
-
-        self.palette = image.getpalette()
-        self.data = image.getdata()
-        self.width, self.height = image.size
-
-    def __write_header(self, output):
-        # start Device Control String (DCS)
-        output.write(self.DCS)
-    
-        # write header
-        output.write('0;0;8q"1;1')
-
-    def __write_palette_section(self, output):
-
-        palette = self.palette
-
-        # write palette section
-        for i in range(0, len(palette), 3):
-            output.write('#' + str(i / 3) + ";2;")
-            output.write(str(palette[i] * 100 / 256) + ";")
-            output.write(str(palette[i + 1] * 100 / 256) + ";")
-            output.write(str(palette[i + 2] * 100 / 256))
-
-    def __write_body_section(self, output):
-
-        data = self.data
-
-        #write body section
-        height = self.height
-        width = self.width
-        for y in range(0, height):
-            cachedNo = data[y * width]
-            count = 1
-            c = None
-            for x in range(0, width):
-                colorNo = data[y * width + x]
-                if colorNo == cachedNo:
-                    count += 1
-                    continue
-                c = chr(pow(2, y % 6) + 63)
-                if count > 1:
-                    output.write('#' + str(cachedNo) + '!' + str(count) + c)
-                    count = 1
-                else:
-                    output.write('#' + str(cachedNo) + c)
-                cachedNo = colorNo
-            if c is not None:
-                if count > 1:
-                    output.write('#' + str(cachedNo) + '!' + str(count) + c)
-                else:
-                    output.write('#' + str(cachedNo) + c)
-            output.write('$') # write line terminator
-            if y % 6 == 5:
-                output.write('-') # write sixel line separator
-        
-    def __write_terminator(self, output):
-        # write ST
-        output.write(self.ST) # terminate Device Control String
-
-    def getvalue(self):
-
-        output = StringIO()
-
-        try:
-            self.__write_header(output)
-            self.__write_palette_section(output)
-            self.__write_body_section(output)
-            self.__write_terminator(output)
-            
-            value = output.getvalue()
-
-        finally: 
-            output.close()
-
-        return value
- 
-class CellSizeDetector:
-    def __set_raw(self):
-        fd = sys.stdin.fileno()
-        backup = termios.tcgetattr(fd)
-        try:
-            new = termios.tcgetattr(fd)
-            new[0] = 0 # c_iflag = 0
-    #        new[3] = 0 # c_lflag = 0
-            new[3] = new[3] &~ (termios.ECHO | termios.ICANON)
-            termios.tcsetattr(fd, termios.TCSANOW, new)
-        except:
-            termios.tcsetattr(fd, termios.TCSANOW, backup)
-        return backup
-    
-    def __reset_raw(self, old):
-        fd = sys.stdin.fileno()
-        termios.tcsetattr(fd, termios.TCSAFLUSH, old)
-    
-    def __get_report(self, query):
-        result = ''
-        fd = sys.stdin.fileno()
-        rfds = [fd]
-        wfds = []
-        xfds = []
-    
-        sys.stdout.write(query)
-        sys.stdout.flush()
-    
-        rfd, wfd, xfd = select.select(rfds, wfds, xfds, 2)
-        if rfd:
-            result = os.read(fd, 1024)
-        return result[:-1].split(';')[1:]
-
-    def get_size(self):
-
-        backup_termios = self.__set_raw()
-        try: 
-            (height, width) = self.__get_report("\x1b[14t")
-            (row, column) = self.__get_report("\x1b[18t")
-            
-            char_width = int(width) / int(column)
-            char_height = int(height) / int(row)
-        finally: 
-            self.__reset_raw(backup_termios)
-        return char_width, char_height
-
+import sys
+from converter import SixelConverter
 
 class SixelWriter:
     
@@ -174,18 +56,15 @@ class SixelWriter:
             elif n < 0:
                 sys.stdout.write(str(-n) + 'A')
 
-    def draw(self, filename, absolute=False, x=None, y=None, w=None, h=None):
-        import Image # PIL
-        image = Image.open(filename)
-        image = image.convert("P")
-
-        if not (w is None and h is None):
-            width, height = image.size
-            if w == None:
-                h = height
-            if h == None:
-                w = width
-            image = image.resize((w, h))
+    def draw(self,
+             filename,
+             absolute=False,
+             x=None,
+             y=None,
+             w=None,
+             h=None,
+             alphathreshold=0,
+             chromakey=False):
 
         self.save_position()
 
@@ -196,7 +75,12 @@ class SixelWriter:
             if not y is None:
                 self.move_y(y, absolute)
 
-            sixel_converter = SixelConverter(image, self.f8bit)
+            sixel_converter = SixelConverter(filename,
+                                             self.f8bit,
+                                             w,
+                                             h,
+                                             alphathreshold=alphathreshold,
+                                             chromakey=chromakey)
             sys.stdout.write(sixel_converter.getvalue())
 
         finally:

@@ -19,7 +19,7 @@
 # ***** END LICENSE BLOCK *****
 
 __author__  = "Hayaki Saito (user@zuse.jp)"
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 __license__ = "GPL v3"
 
 import os, sys, optparse, select
@@ -27,8 +27,6 @@ try:
     from CStringIO import StringIO
 except:
     from StringIO import StringIO
-
-from sixel import *
 
 def main():
 
@@ -71,17 +69,34 @@ def main():
                       dest="height",
                       help="Height in cell size, or pixel size with unit 'px'")
 
+    parser.add_option("-t", "--alpha-threshold",
+                      dest="alphathreshold",
+                      default="0",
+                      help="Alpha threthold for PNG-to-SIXEL image conversion")
+
+    parser.add_option("-c", "--chromakey",
+                      dest="chromakey",
+                      default=False,
+                      action="store_true",
+                      help="Enable auto chroma key processing")
+
     options, args = parser.parse_args()
 
+    import sixel
+    import cellsize
+
     if os.isatty(sys.stdin.fileno()):
-        char_width, char_height = CellSizeDetector().get_size()
+        try:
+            char_width, char_height = cellsize.CellSizeDetector().get_size()
+        except:
+            char_width, char_height = (10, 20)
     else:
         char_width, char_height = (10, 20)
 
     left = options.left
     if not left is None:
         pos = left.find("px")
-        if pos == len(left) - 2:
+        if pos > 0:
             left = int(left[:pos]) / char_width 
         else:
             left = int(left) 
@@ -105,12 +120,12 @@ def main():
     height = options.height
     if not height is None:
         pos = height.find("px")
-        if pos == len(height) - 2:
+        if pos > 0:
             height = int(height[:pos]) 
         else:
             height = int(height) * char_height
                
-    writer = SixelWriter(f8bit=options.f8bit)
+    writer = sixel.SixelWriter(f8bit=options.f8bit)
 
     if select.select([sys.stdin, ], [], [], 0.0)[0]:
         imagefile = StringIO(sys.stdin.read())
@@ -120,13 +135,16 @@ def main():
         else:
             imagefile = args[0]
 
+    alphathreshold = int(options.alphathreshold)
+
     writer.draw(imagefile,
                 absolute=options.fabsolute,
                 x=left,
                 y=top,
                 w=width,
-                h=height) 
-
+                h=height,
+                alphathreshold=alphathreshold,
+                chromakey=options.chromakey) 
 if __name__ == '__main__':
     main()
 
