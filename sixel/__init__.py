@@ -19,7 +19,7 @@
 # ***** END LICENSE BLOCK *****
 
 __author__  = "Hayaki Saito (user@zuse.jp)"
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 __license__ = "GPL v3"
 
 import os, sys, optparse, select
@@ -27,6 +27,8 @@ try:
     from CStringIO import StringIO
 except:
     from StringIO import StringIO
+
+from sixel import SixelWriter, SixelConverter
 
 def main():
 
@@ -82,7 +84,6 @@ def main():
 
     options, args = parser.parse_args()
 
-    import sixel
     import cellsize
 
     if os.isatty(sys.stdin.fileno()):
