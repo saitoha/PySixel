@@ -19,7 +19,7 @@
 # ***** END LICENSE BLOCK *****
 
 try:
-    from CStringIO import StringIO
+    from cStringIO import StringIO
 except:
     from StringIO import StringIO
 
@@ -46,7 +46,7 @@ class SixelConverter:
                 h = height
             image = image.resize((w, h))
 
-        if alphathreshold < 0:
+        if alphathreshold > 0:
             self.rawdata = image.convert("RGBA").getdata()
         image = image.convert("RGB").convert("P",
                                              palette=Image.ADAPTIVE,

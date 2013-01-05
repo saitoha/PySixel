@@ -19,12 +19,12 @@
 # ***** END LICENSE BLOCK *****
 
 __author__  = "Hayaki Saito (user@zuse.jp)"
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 __license__ = "GPL v3"
 
 import os, sys, optparse, select
 try:
-    from CStringIO import StringIO
+    from cStringIO import StringIO
 except:
     from StringIO import StringIO
 

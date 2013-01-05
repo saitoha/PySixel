@@ -39,22 +39,20 @@ class SixelWriter:
     def move_x(self, n, fabsolute):
         sys.stdout.write(self.CSI)
         if fabsolute:
-            sys.stdout.write(str(n) + '`')
-        else:
-            if n > 0:
-                sys.stdout.write(str(n) + 'C')
-            elif n < 0:
-                sys.stdout.write(str(-n) + 'D')
+            sys.stdout.write('%d`' % n)
+        elif n > 0:
+            sys.stdout.write('%dC' % n)
+        elif n < 0:
+            sys.stdout.write('%dD' % -n)
 
     def move_y(self, n, fabsolute):
         sys.stdout.write(self.CSI)
         if fabsolute:
-            sys.stdout.write(str(n) + 'd')
-        else:
-            if n > 0:
-                sys.stdout.write(str(n) + 'B')
-            elif n < 0:
-                sys.stdout.write(str(-n) + 'A')
+            sys.stdout.write('%dd' % n)
+        elif n > 0:
+            sys.stdout.write('%dB' % n)
+        elif n < 0:
+            sys.stdout.write('%dA' % n)
 
     def draw(self,
              filename,
