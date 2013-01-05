@@ -68,7 +68,13 @@ class SixelConverter:
         output.write(self.DCS)
     
         # write header
-        output.write('0;0;8q"1;1')
+        aspect_ratio = 7 # means 1:1
+        if self.__chromakey:
+            background_option = 2
+        else:
+            background_option = 1
+        dpi = 75 # dummy value
+        output.write('%d;%d;%dq"1;1' % (aspect_ratio, background_option, dpi))
 
     def __write_palette_section(self, output):
 
