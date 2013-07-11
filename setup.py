@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
 from sixel import __version__, __license__, __author__
 
 setup(name                  = 'PySixel',
@@ -8,6 +8,7 @@ setup(name                  = 'PySixel',
       description           = 'Make SIXEL color graphics supported by some terminal emulators(RLogin/mlterm/tanasinn)',
       long_description      = open("README.rst").read(),
       py_modules            = ['sixel'],
+      ext_modules           = [Extension('imageloader', sources = ['imageloader.c'])],
       eager_resources       = [],
       classifiers           = ['Development Status :: 4 - Beta',
                                'Topic :: Terminals',
