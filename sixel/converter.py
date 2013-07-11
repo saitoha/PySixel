@@ -20,44 +20,45 @@
 
 try:
     from cStringIO import StringIO
-except:
+except ImportError:
     from StringIO import StringIO
+
 
 class SixelConverter:
 
-    def __init__(self, filename,
+    def __init__(self, file,
                  f8bit=False,
                  w=None,
                  h=None,
                  alphathreshold=0,
                  chromakey=False):
 
-        import Image # PIL
-        image = Image.open(filename)
-
         self.__alphathreshold = alphathreshold
         self.__chromakey = chromakey
 
+        if f8bit:  # 8bit mode
+            self.DCS = '\x90'
+            self.ST = '\x9c'
+        else:
+            self.DCS = '\x1bP'
+            self.ST = '\x1b\\'
+
+        import Image  # PIL
+
+        image = Image.open(file)
+        image = image.convert("RGB").convert("P",
+                                             palette=Image.ADAPTIVE,
+                                             colors=256)
         if not (w is None and h is None):
             width, height = image.size
-            if w == None:
+            if w is None:
                 w = width
-            if h == None:
+            if h is None:
                 h = height
             image = image.resize((w, h))
 
         if alphathreshold > 0:
             self.rawdata = image.convert("RGBA").getdata()
-        image = image.convert("RGB").convert("P",
-                                             palette=Image.ADAPTIVE,
-                                             colors=256)
-
-        if f8bit: # 8bit mode
-            self.DCS='\x90'
-            self.ST='\x9c'
-        else:
-            self.DCS='\x1bP'
-            self.ST='\x1b\\'
 
         self.palette = image.getpalette()
         self.data = image.getdata()
@@ -66,14 +67,14 @@ class SixelConverter:
     def __write_header(self, output):
         # start Device Control String (DCS)
         output.write(self.DCS)
-    
+
         # write header
-        aspect_ratio = 7 # means 1:1
+        aspect_ratio = 7  # means 1:1
         if self.__chromakey:
             background_option = 2
         else:
             background_option = 1
-        dpi = 75 # dummy value
+        dpi = 75  # dummy value
         output.write('%d;%d;%dq"1;1' % (aspect_ratio, background_option, dpi))
 
     def __write_palette_section(self, output):
@@ -83,7 +84,7 @@ class SixelConverter:
         # write palette section
         for i in xrange(0, len(palette), 3):
             no = i / 3
-            r = palette[i] * 100 / 256
+            r = palette[i + 0] * 100 / 256
             g = palette[i + 1] * 100 / 256
             b = palette[i + 2] * 100 / 256
             output.write('#%d;2;%d;%d;%d' % (no, r, g, b))
@@ -122,15 +123,15 @@ class SixelConverter:
                     output.write('#%d%c%c' % (cached_no, c, c))
                 else:
                     output.write('#%d!%d%c' % (cached_no, count, c))
-            output.write('$') # write line terminator
+            output.write('$')  # write line terminator
             if y % 6 == 5:
-                output.write('-') # write sixel line separator
-        
+                output.write('-')  # write sixel line separator
 
     def __write_body_with_alphathreshold(self, output, data, keycolor):
         rawdata = self.rawdata
         height = self.height
         width = self.width
+        max_runlength = 255
         for y in xrange(0, height):
             cached_no = data[y * width]
             cached_alpha = rawdata[y * width][3]
@@ -141,7 +142,7 @@ class SixelConverter:
                 alpha = rawdata[y * width + x][3]
                 if color_no == cached_no:
                     if alpha == cached_alpha:
-                        if count < 255:
+                        if count < max_runlength:
                             count += 1
                             continue
                 if cached_no == keycolor:
@@ -169,24 +170,24 @@ class SixelConverter:
                     output.write('#%d%c%c' % (cached_no, c, c))
                 else:
                     output.write('#%d!%d%c' % (cached_no, count, c))
-            output.write('$') # write line terminator
+            output.write('$')  # write line terminator
             if y % 6 == 5:
-                output.write('-') # write sixel line separator
+                output.write('-')  # write sixel line separator
 
     def __write_body_section(self, output):
         data = self.data
         if self.__chromakey:
-            keycolor = data[0] 
+            keycolor = data[0]
         else:
             keycolor = -1
         if self.__alphathreshold == 0:
             self.__write_body_without_alphathreshold(output, data, keycolor)
         else:
             self.__write_body_with_alphathreshold(output, data, keycolor)
-        
+
     def __write_terminator(self, output):
         # write ST
-        output.write(self.ST) # terminate Device Control String
+        output.write(self.ST)  # terminate Device Control String
 
     def getvalue(self):
 
@@ -197,11 +198,10 @@ class SixelConverter:
             self.__write_palette_section(output)
             self.__write_body_section(output)
             self.__write_terminator(output)
-            
+
             value = output.getvalue()
 
-        finally: 
+        finally:
             output.close()
 
         return value
-
