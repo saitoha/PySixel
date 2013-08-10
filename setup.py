@@ -8,7 +8,6 @@ setup(name                  = 'PySixel',
       description           = 'Make SIXEL color graphics supported by some terminal emulators(RLogin/mlterm/tanasinn)',
       long_description      = open("README.rst").read(),
       py_modules            = ['sixel'],
-      ext_modules           = [Extension('imageloader', sources = ['imageloader.c'])],
       eager_resources       = [],
       classifiers           = ['Development Status :: 4 - Beta',
                                'Topic :: Terminals',
@@ -25,7 +24,7 @@ setup(name                  = 'PySixel',
       packages              = find_packages(exclude=[]),
       zip_safe              = True,
       include_package_data  = False,
-      install_requires      = ['PIL'],
+      install_requires      = ['imageloader'],
       entry_points          = """
                               [console_scripts]
                               sixelconv = sixel:main
