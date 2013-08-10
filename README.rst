@@ -52,6 +52,9 @@ Code Example
 
 Dependency
 ----------
+ - Python imageloader module 
+   https://pypi.python.org/pypi/imageloader
+
  - Python Imaging Library (PIL)
    http://www.pythonware.com/products/pil/ 
 
