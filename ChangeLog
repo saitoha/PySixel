@@ -3,5 +3,6 @@
 
     * Fix stupid alpha-threshold bug (pointed by Araki Ken, thanks!) 
 
+2013-08-10 Hayaki Saito <user@zuse.jp>
 
-
+    * Use imageloader module if it exists 
