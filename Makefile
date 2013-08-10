@@ -1,6 +1,4 @@
-
-all:
-	
+PYTHON=python
 
 install:
 	curl http://peak.telecommunity.com/dist/ez_setup.py | python
@@ -11,7 +9,7 @@ uninstall:
 
 clean:
 	rm -rf dist/ build/ PySixel.egg-info
-	rm **/*.pyc
+	rm -f **/*.pyc
 
 update:
 	python setup.py register
