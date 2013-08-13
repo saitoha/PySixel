@@ -5,7 +5,7 @@ from sixel import __version__, __license__, __author__
 
 setup(name                  = 'PySixel',
       version               = __version__,
-      description           = 'Make SIXEL color graphics supported by some terminal emulators(RLogin/mlterm/tanasinn)',
+      description           = 'Make SIXEL color graphics supported by some terminal emulators(DECTerm/RLogin/mlterm/tanasinn/xterm)',
       long_description      = open("README.rst").read(),
       py_modules            = ['sixel'],
       eager_resources       = [],
