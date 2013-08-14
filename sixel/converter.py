@@ -44,9 +44,9 @@ class SixelConverter:
             self.ST = '\x1b\\'
 
         try:
-            import imageloader as Image
-        except ImportError:
             import Image  # PIL
+        except ImportError:
+            import imageloader as Image
 
         image = Image.open(file)
         image = image.convert("RGB").convert("P",
