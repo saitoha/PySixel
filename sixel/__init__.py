@@ -19,10 +19,13 @@
 # ***** END LICENSE BLOCK *****
 
 __author__  = "Hayaki Saito (user@zuse.jp)"
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 __license__ = "GPL v3"
 
-import os, sys, optparse, select
+import os
+import sys
+import optparse
+import select
 try:
     from cStringIO import StringIO
 except:
@@ -148,4 +151,3 @@ def main():
                 chromakey=options.chromakey) 
 if __name__ == '__main__':
     main()
-
