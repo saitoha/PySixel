@@ -19,7 +19,7 @@
 # ***** END LICENSE BLOCK *****
 
 __author__  = "Hayaki Saito (user@zuse.jp)"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __license__ = "GPL v3"
 
 import os

@@ -44,7 +44,7 @@ class SixelConverter:
             self.ST = '\x1b\\'
 
         try:
-            import Image  # PIL
+            from PIL import Image  # PIL
         except ImportError:
             import imageloader as Image
 
