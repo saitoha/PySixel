@@ -4,18 +4,19 @@ pysixel
 What is SIXEL?
 --------------
 
-SIXEL is one of image formats for terminal imaging introduced by DEC VT series.
-SIXEL image data scheme is representation as a terminal-friendly escape sequence.
-So if you want to show a SIXEL image file, all you have to do is "cat" it to your terminal. 
-
-SIXEL is supported by old terminal applications, such as SAS, WordPerfect.
-Now netpbm and Gnuplot support this.
-
 .. image:: http://zuse.jp/misc/sixel_gnuplot.png
    :width: 640
 
+SIXEL is one of image formats for terminal imaging introduced by DEC VT series.
+SIXEL image data scheme is represented as a terminal-friendly escape sequence.
+So if you want to show a SIXEL image file, all you have to do is "cat" it to your terminal. 
+
 .. image:: http://zuse.jp/misc/sixel_hikari.png
    :width: 640
+
+I heared SIXEL is supported by some old terminal applications, such as SAS, WordPerfect.
+
+Nowadays netpbm and Gnuplot support this.
 
 .. image:: http://zuse.jp/misc/sixel_ls.png
    :width: 640
@@ -30,12 +31,15 @@ which support sixel graphics.
 Now SIXEL feature is supported by the following terminals.
 
 - RLogin (Japanese terminal emulator)
+
   http://nanno.dip.jp/softlib/man/rlogin/
 
 - tanasinn (Works with firefox)
+
   http://zuse.jp/tanasinn/
 
 - mlterm
+
   Works on each of X, win32/cygwin, framebuffer version.
   http://mlterm.sourceforge.net/
 
@@ -44,7 +48,13 @@ Now SIXEL feature is supported by the following terminals.
   the SIXEL palette is limited to a maximum of 256 colors.
   http://invisible-island.net/xterm/
 
+- DECterm
+
+- Kermit
+
 - WRQ Reflection
+
+- ZSTEM
 
 
 Install
@@ -103,6 +113,15 @@ View generated sixel file::
 
     $ cat test.six
 
+Show sixel in xterm ::
+
+	$ curl ftp://invisible-island.net/xterm/xterm-301.tgz | tar xz
+	$ cd xterm-301
+	$ ./configure --enable-wide-chars --enable-sixel-graphics --enable-256-color
+    $ make
+    # make install
+	$ xterm -ti vt340 -e 'sixelconv ~/testdir/test.jpg'
+
 
 Code Example
 ------------
@@ -115,11 +134,11 @@ Code Example
 
 Dependency
 ----------
+ - Pillow
+   https://github.com/python-imaging/Pillow
+
  - Python imageloader module 
    https://pypi.python.org/pypi/imageloader
-
- - Python Imaging Library (PIL)
-   http://www.pythonware.com/products/pil/ 
 
 Reference
 ---------
