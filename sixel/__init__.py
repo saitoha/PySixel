@@ -26,12 +26,14 @@ import os
 import sys
 import optparse
 import select
+
 try:
     from cStringIO import StringIO
 except:
     from StringIO import StringIO
 
 from sixel import SixelWriter, SixelConverter
+from cellsize import CellSizeDetector
 
 def main():
 
@@ -87,12 +89,10 @@ def main():
 
     options, args = parser.parse_args()
 
-    import cellsize
-
     if os.isatty(sys.stdin.fileno()):
         try:
-            char_width, char_height = cellsize.CellSizeDetector().get_size()
-        except:
+            char_width, char_height = CellSizeDetector().get_size()
+        except Exception:
             char_width, char_height = (10, 20)
     else:
         char_width, char_height = (10, 20)
@@ -133,11 +133,10 @@ def main():
 
     if select.select([sys.stdin, ], [], [], 0.0)[0]:
         imagefile = StringIO(sys.stdin.read())
+    elif len(args) == 0 or args[0] == '-':
+        imagefile = StringIO(sys.stdin.read())
     else:
-        if len(args) == 0 or args[0] == '-':
-            imagefile = StringIO(sys.stdin.read())
-        else:
-            imagefile = args[0]
+        imagefile = args[0]
 
     alphathreshold = int(options.alphathreshold)
 

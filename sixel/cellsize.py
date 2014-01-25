@@ -18,9 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
-import sys, os, termios, select
+import sys
+import os
+import termios
+import select
 
 class CellSizeDetector:
+
     def __set_raw(self):
         fd = sys.stdin.fileno()
         backup = termios.tcgetattr(fd)
@@ -30,7 +34,7 @@ class CellSizeDetector:
     #        new[3] = 0 # c_lflag = 0
             new[3] = new[3] &~ (termios.ECHO | termios.ICANON)
             termios.tcsetattr(fd, termios.TCSANOW, new)
-        except:
+        except Exception:
             termios.tcsetattr(fd, termios.TCSANOW, backup)
         return backup
     
