@@ -76,7 +76,7 @@ class SixelWriter:
 
         try:
             filename.seek(0)
-        except AttributeError:
+        except Exception:
             pass
         self.save_position(output)
 
