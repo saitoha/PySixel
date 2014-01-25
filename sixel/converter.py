@@ -24,7 +24,7 @@ class SixelConverter:
                  f8bit=False,
                  w=None,
                  h=None,
-                 ncolor=16,
+                 ncolor=256,
                  alphathreshold=0,
                  chromakey=False):
 

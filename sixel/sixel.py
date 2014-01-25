@@ -70,7 +70,7 @@ class SixelWriter:
              y=None,
              w=None,
              h=None,
-             ncolor=16,
+             ncolor=256,
              alphathreshold=0,
              chromakey=False):
 

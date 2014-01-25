@@ -98,7 +98,7 @@ def main():
                       action="store",
                       type="int",
                       dest="ncolor",
-                      default=16,
+                      default=256,
                       help="Specify number of colors")
 
     options, args = parser.parse_args()
