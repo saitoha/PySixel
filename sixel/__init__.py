@@ -106,7 +106,8 @@ def main():
 
     options, args = parser.parse_args()
 
-    if os.isatty(sys.stdin.fileno()):
+    stdin, stdout = sys.stdin, sys.stdout
+    if os.isatty(stdout.fileno()) and os.isatty(stdin.fileno()):
         try:
             char_width, char_height = CellSizeDetector().get_size()
         except Exception:
@@ -148,10 +149,10 @@ def main():
                
     writer = sixel.SixelWriter(f8bit=options.f8bit)
 
-    if select.select([sys.stdin, ], [], [], 0.0)[0]:
-        imagefile = StringIO(sys.stdin.read())
+    if select.select([stdin, ], [], [], 0.0)[0]:
+        imagefile = stdin
     elif len(args) == 0 or args[0] == '-':
-        imagefile = StringIO(sys.stdin.read())
+        imagefile = stdin
     else:
         imagefile = args[0]
 
