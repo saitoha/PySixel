@@ -50,8 +50,8 @@ def main():
               help="Generate a sixel image for 7bit terminal or printer")
  
     parser.add_option("-r", "--relative-position",
-                      default=False,
                       action="store_false",
+                      default=False,
                       dest="fabsolute",
                       help="Treat specified position as relative one")
   
@@ -61,22 +61,32 @@ def main():
                       help="Treat specified position as absolute one")
      
     parser.add_option("-x", "--left",
+                      action="store",
+                      type="int",
                       dest="left",
                       help="Left position in cell size, or pixel size with unit 'px'")
 
     parser.add_option("-y", "--top",
+                      action="store",
+                      type="int",
                       dest="top",
                       help="Top position in cell size, or pixel size with unit 'px'")
      
     parser.add_option("-w", "--width",
+                      action="store",
+                      type="int",
                       dest="width",
                       help="Width in cell size, or pixel size with unit 'px'")
      
     parser.add_option("-e", "--height",
+                      action="store",
+                      type="int",
                       dest="height",
                       help="Height in cell size, or pixel size with unit 'px'")
 
     parser.add_option("-t", "--alpha-threshold",
+                      action="store",
+                      type="int",
                       dest="alphathreshold",
                       default="0",
                       help="Alpha threthold for PNG-to-SIXEL image conversion")
@@ -86,6 +96,13 @@ def main():
                       default=False,
                       action="store_true",
                       help="Enable auto chroma key processing")
+
+    parser.add_option("-n", "--ncolor",
+                      action="store",
+                      type="int",
+                      dest="ncolor",
+                      default=16,
+                      help="Specify number of colors")
 
     options, args = parser.parse_args()
 
@@ -141,11 +158,13 @@ def main():
     alphathreshold = int(options.alphathreshold)
 
     writer.draw(imagefile,
+                output=sys.stdout,
                 absolute=options.fabsolute,
                 x=left,
                 y=top,
                 w=width,
                 h=height,
+                ncolor=int(options.ncolor),
                 alphathreshold=alphathreshold,
                 chromakey=options.chromakey) 
 if __name__ == '__main__':

@@ -19,69 +19,75 @@
 # ***** END LICENSE BLOCK *****
 
 import sys
+import os
 from converter import SixelConverter
 
 class SixelWriter:
     
     def __init__(self, f8bit = False):
         self.f8bit = f8bit
-        if f8bit: # 8bit mode
+        if f8bit:  # 8bit mode
             self.CSI='\x9b'
         else:
             self.CSI='\x1b['
 
-    def save_position(self):
-        sys.stdout.write('\x1b7')
+    def save_position(self, output):
+        if os.isatty(output.fileno()):
+            output.write('\x1b7')  # DECSC
 
-    def restore_position(self):
-        sys.stdout.write('\x1b8')
+    def restore_position(self, output):
+        if os.isatty(output.fileno()):
+            output.write('\x1b8')  # DECRC
 
-    def move_x(self, n, fabsolute):
-        sys.stdout.write(self.CSI)
+    def move_x(self, n, fabsolute, output):
+        output.write(self.CSI)
         if fabsolute:
-            sys.stdout.write('%d`' % n)
+            output.write('%d`' % n)
         elif n > 0:
-            sys.stdout.write('%dC' % n)
+            output.write('%dC' % n)
         elif n < 0:
-            sys.stdout.write('%dD' % -n)
+            output.write('%dD' % -n)
 
-    def move_y(self, n, fabsolute):
-        sys.stdout.write(self.CSI)
+    def move_y(self, n, fabsolute, output):
+        output.write(self.CSI)
         if fabsolute:
-            sys.stdout.write('%dd' % n)
+            output.write('%dd' % n)
         elif n > 0:
-            sys.stdout.write('%dB' % n)
+            output.write('%dB' % n)
         elif n < 0:
-            sys.stdout.write('%dA' % n)
+            output.write('%dA' % n)
 
     def draw(self,
              filename,
+             output=sys.stdout,
              absolute=False,
              x=None,
              y=None,
              w=None,
              h=None,
+             ncolor=16,
              alphathreshold=0,
              chromakey=False):
 
-        self.save_position()
+        self.save_position(output)
 
         try:
             if not x is None:
-                self.move_x(x, absolute)
+                self.move_x(x, absolute, output)
 
             if not y is None:
-                self.move_y(y, absolute)
+                self.move_y(y, absolute, output)
 
             sixel_converter = SixelConverter(filename,
                                              self.f8bit,
                                              w,
                                              h,
+                                             ncolor,
                                              alphathreshold=alphathreshold,
                                              chromakey=chromakey)
-            sys.stdout.write(sixel_converter.getvalue())
+            output.write(sixel_converter.getvalue())
 
         finally:
-            self.restore_position()
+            self.restore_position(output)
         
 

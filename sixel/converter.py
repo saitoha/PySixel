@@ -30,11 +30,17 @@ class SixelConverter:
                  f8bit=False,
                  w=None,
                  h=None,
+                 ncolor=16,
                  alphathreshold=0,
                  chromakey=False):
 
         self.__alphathreshold = alphathreshold
         self.__chromakey = chromakey
+
+        if ncolor >= 256:
+            ncolor = 256
+
+        self._ncolor = ncolor
 
         if f8bit:  # 8bit mode
             self.DCS = '\x90'
@@ -51,7 +57,7 @@ class SixelConverter:
         image = Image.open(file)
         image = image.convert("RGB").convert("P",
                                              palette=Image.ADAPTIVE,
-                                             colors=256)
+                                             colors=ncolor)
         if not (w is None and h is None):
             width, height = image.size
             if w is None:
@@ -85,7 +91,7 @@ class SixelConverter:
         palette = self.palette
 
         # write palette section
-        for i in xrange(0, len(palette), 3):
+        for i in xrange(0, self._ncolor * 3, 3):
             no = i / 3
             r = palette[i + 0] * 100 / 256
             g = palette[i + 1] * 100 / 256
