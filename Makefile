@@ -2,7 +2,6 @@
 PACKAGE_NAME=PySixel
 DEPENDENCIES=PIL
 PYTHON=python
-PYTHON25=python2.5
 PYTHON26=python2.6
 PYTHON27=python2.7
 SETUP_SCRIPT=setup.py
@@ -16,7 +15,6 @@ build: smoketest
 	ln -f sixel/converter.py /tmp/sixel_cimpl.pyx
 	$(CYTHON) /tmp/sixel_cimpl.pyx -o sixel/sixel_cimpl.c
 	$(PYTHON) $(SETUP_SCRIPT) sdist
-	$(PYTHON25) $(SETUP_SCRIPT) bdist_egg
 	$(PYTHON26) $(SETUP_SCRIPT) bdist_egg
 	$(PYTHON27) $(SETUP_SCRIPT) bdist_egg
 
@@ -50,7 +48,6 @@ clean:
 test: smoketest nosetest
 
 smoketest:
-	$(PYTHON25) $(SETUP_SCRIPT) test
 	$(PYTHON26) $(SETUP_SCRIPT) test
 	$(PYTHON27) $(SETUP_SCRIPT) test
 
@@ -66,7 +63,6 @@ nosetest:
 update: build clean test
 	$(PYTHON) $(SETUP_SCRIPT) register
 	$(PYTHON) $(SETUP_SCRIPT) sdist upload
-	$(PYTHON25) $(SETUP_SCRIPT) bdist_egg upload
 	$(PYTHON26) $(SETUP_SCRIPT) bdist_egg upload
 	$(PYTHON27) $(SETUP_SCRIPT) bdist_egg upload
 
