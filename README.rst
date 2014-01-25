@@ -1,6 +1,52 @@
 pysixel
 =======
 
+What is SIXEL?
+--------------
+
+SIXEL is one of image formats for terminal imaging introduced by DEC VT series.
+SIXEL image data scheme is representation as a terminal-friendly escape sequence.
+So if you want to show a SIXEL image file, all you have to do is "cat" it to your terminal. 
+
+SIXEL is supported by old terminal applications, such as SAS, WordPerfect.
+Now netpbm and Gnuplot support this.
+
+.. image:: http://zuse.jp/misc/sixel_gnuplot.png
+   :width: 640
+
+.. image:: http://zuse.jp/misc/sixel_hikari.png
+   :width: 640
+
+.. image:: http://zuse.jp/misc/sixel_ls.png
+   :width: 640
+
+
+Requirements
+------------
+
+If you want to view a SIXEL image, you have to get a terminal
+which support sixel graphics.
+
+Now SIXEL feature is supported by the following terminals.
+
+- RLogin (Japanese terminal emulator)
+  http://nanno.dip.jp/softlib/man/rlogin/
+
+- tanasinn (Works with firefox)
+  http://zuse.jp/tanasinn/
+
+- mlterm
+  Works on each of X, win32/cygwin, framebuffer version.
+  http://mlterm.sourceforge.net/
+
+- XTerm (compiled with --enable-sixel option)
+  You should launch xterm with "-ti 340" option.
+  the SIXEL palette is limited to a maximum of 256 colors.
+  http://invisible-island.net/xterm/
+
+- WRQ Reflection
+
+
 Install
 -------
 
@@ -18,7 +64,7 @@ or via pip ::
 Usage
 -----
 
-Command line tool::
+PySixel provides a Command line tool::
 
     $ sixelconv [options] filename
 
@@ -40,6 +86,23 @@ or ::
   -e HEIGHT, --height=HEIGHT                            Height in cell size, or pixel size with unit 'px'
   -t ALPHATHRESHOLD, --alpha-threshold=ALPHATHRESHOLD   Alpha threshold for PNG-to-SIXEL image conversion
   -c, --chromakey                                       Enable auto chroma key processing
+  -n NCOLOR, --ncolor=NCOLOR                            Specify number of colors
+
+Example
+-------
+
+View an image file::
+
+    $ sixelconv test.png
+
+Generate sixel file from an image file::
+
+    $ sixelconv < test.png > test.six
+
+View generated sixel file::
+
+    $ cat test.six
+
 
 Code Example
 ------------
