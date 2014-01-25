@@ -62,25 +62,21 @@ def main():
      
     parser.add_option("-x", "--left",
                       action="store",
-                      type="int",
                       dest="left",
                       help="Left position in cell size, or pixel size with unit 'px'")
 
     parser.add_option("-y", "--top",
                       action="store",
-                      type="int",
                       dest="top",
                       help="Top position in cell size, or pixel size with unit 'px'")
      
     parser.add_option("-w", "--width",
                       action="store",
-                      type="int",
                       dest="width",
                       help="Width in cell size, or pixel size with unit 'px'")
      
     parser.add_option("-e", "--height",
                       action="store",
-                      type="int",
                       dest="height",
                       help="Height in cell size, or pixel size with unit 'px'")
 
@@ -107,45 +103,47 @@ def main():
     options, args = parser.parse_args()
 
     stdin, stdout = sys.stdin, sys.stdout
-    if os.isatty(stdout.fileno()) and os.isatty(stdin.fileno()):
-        try:
-            char_width, char_height = CellSizeDetector().get_size()
-        except Exception:
-            char_width, char_height = (10, 20)
-    else:
-        char_width, char_height = (10, 20)
-
     left = options.left
-    if not left is None:
-        pos = left.find("px")
-        if pos > 0:
-            left = int(left[:pos]) / char_width 
-        else:
-            left = int(left) 
-
     top = options.top
-    if not top is None:
-        pos = top.find("px")
-        if pos > 0:
-            top = int(top[:pos]) / char_width 
-        else:
-            top = int(top) 
- 
     width = options.width
-    if not width is None:
-        pos = width.find("px")
-        if pos > 0:
-            width = int(width[:pos]) 
-        else:
-            width = int(width) * char_width
- 
     height = options.height
-    if not height is None:
-        pos = height.find("px")
-        if pos > 0:
-            height = int(height[:pos]) 
+
+    if (left, top, width, height) != (None, None, None, None):
+        if os.isatty(stdout.fileno()) and os.isatty(stdin.fileno()):
+            try:
+                char_width, char_height = CellSizeDetector().get_size()
+            except Exception:
+                char_width, char_height = (10, 20)
         else:
-            height = int(height) * char_height
+            char_width, char_height = (10, 20)
+
+        if not left is None:
+            pos = left.find("px")
+            if pos > 0:
+                left = int(left[:pos]) / char_width 
+            else:
+                left = int(left) 
+
+        if not top is None:
+            pos = top.find("px")
+            if pos > 0:
+                top = int(top[:pos]) / char_width 
+            else:
+                top = int(top) 
+ 
+        if not width is None:
+            pos = width.find("px")
+            if pos > 0:
+                width = int(width[:pos]) 
+            else:
+                width = int(width) * char_width
+ 
+        if not height is None:
+            pos = height.find("px")
+            if pos > 0:
+                height = int(height[:pos]) 
+            else:
+                height = int(height) * char_height
                
     writer = sixel.SixelWriter(f8bit=options.f8bit)
 
@@ -156,8 +154,6 @@ def main():
     else:
         imagefile = args[0]
 
-    alphathreshold = int(options.alphathreshold)
-
     writer.draw(imagefile,
                 output=sys.stdout,
                 absolute=options.fabsolute,
@@ -166,7 +162,7 @@ def main():
                 w=width,
                 h=height,
                 ncolor=int(options.ncolor),
-                alphathreshold=alphathreshold,
+                alphathreshold=options.alphathreshold,
                 chromakey=options.chromakey) 
 if __name__ == '__main__':
     main()
