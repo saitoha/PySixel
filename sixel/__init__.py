@@ -26,6 +26,7 @@ import os
 import sys
 import optparse
 import select
+import logging
 
 try:
     from cStringIO import StringIO
@@ -101,6 +102,14 @@ def main():
                       help="Specify number of colors")
 
     options, args = parser.parse_args()
+
+    rcdir = os.path.join(os.getenv("HOME"), ".pysixel")
+    logdir = os.path.join(rcdir, "log")
+    if not os.path.exists(logdir):
+        os.makedirs(logdir)
+
+    logfile = os.path.join(logdir, "log.txt")
+    logging.basicConfig(filename=logfile, filemode="w")
 
     stdin, stdout = sys.stdin, sys.stdout
     left = options.left
