@@ -32,7 +32,7 @@ setup(name                  = 'PySixel',
       packages              = find_packages(exclude=[]),
       zip_safe              = False,
       include_package_data  = False,
-      install_requires      = ['imageloader', 'PIL'],
+      install_requires      = ['imageloader', 'Pillow'],
       entry_points          = """
                               [console_scripts]
                               sixelconv = sixel:main
