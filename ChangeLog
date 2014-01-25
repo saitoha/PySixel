@@ -1,4 +1,9 @@
 
+2014-01-26 Hayaki Saito <user@zuse.jp>
+
+    * Use alternative C-implemented module if possible
+    * Add an option --ncolor(-n), specify number of colors
+
 2013-01-05 Hayaki Saito <user@zuse.jp>
 
     * Fix stupid alpha-threshold bug (pointed by Araki Ken, thanks!) 
