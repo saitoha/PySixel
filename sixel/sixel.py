@@ -89,7 +89,7 @@ class SixelWriter:
                                              ncolor,
                                              alphathreshold=alphathreshold,
                                              chromakey=chromakey)
-            output.write(sixel_converter.getvalue())
+            sixel_converter.write(output)
 
         finally:
             self.restore_position(output)

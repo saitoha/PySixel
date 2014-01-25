@@ -18,12 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
-
 class SixelConverter:
 
     def __init__(self, file,
@@ -200,17 +194,24 @@ class SixelConverter:
 
     def getvalue(self):
 
+        try:
+            from cStringIO import StringIO
+        except ImportError:
+            from StringIO import StringIO
         output = StringIO()
 
         try:
-            self.__write_header(output)
-            self.__write_palette_section(output)
-            self.__write_body_section(output)
-            self.__write_terminator(output)
-
+            self.write(output)
             value = output.getvalue()
 
         finally:
             output.close()
 
         return value
+
+    def write(self, output):
+        self.__write_header(output)
+        self.__write_palette_section(output)
+        self.__write_body_section(output)
+        self.__write_terminator(output)
+
