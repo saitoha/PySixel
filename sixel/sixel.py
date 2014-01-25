@@ -69,6 +69,10 @@ class SixelWriter:
              alphathreshold=0,
              chromakey=False):
 
+        try:
+            filename.seek(0)
+        except AttributeError:
+            pass
         self.save_position(output)
 
         try:
