@@ -20,7 +20,12 @@
 
 import sys
 import os
-from converter import SixelConverter
+import logging
+try:
+    from sixel_cimpl import SixelConverter
+except ImportError, e:
+    logging.exception(e)
+    from converter import SixelConverter
 
 class SixelWriter:
     
