@@ -14,7 +14,7 @@ So if you want to show a SIXEL image file, all you have to do is "cat" it to you
 .. image:: http://zuse.jp/misc/sixel_hikari.png
    :width: 640
 
-I heared SIXEL is supported by some old terminal applications, such as SAS, WordPerfect.
+I heard SIXEL was supported by some old terminal applications, such as SAS, WordPerfect.
 
 Nowadays netpbm and Gnuplot support this.
 

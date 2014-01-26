@@ -95,31 +95,33 @@ class SixelConverter:
     def __write_body_without_alphathreshold(self, output, data, keycolor):
         height = self.height
         width = self.width
+        n = 1
         for y in xrange(0, height):
-            cached_no = data[y * width]
+            p = y * width
+            cached_no = data[p]
             count = 1
-            c = None
+            c = -1
             for x in xrange(0, width):
-                color_no = data[y * width + x]
+                color_no = data[p + x]
                 if color_no == cached_no and count < 255:
                     count += 1
-                    continue
-                if cached_no == keycolor:
-                    c = '?'
                 else:
-                    c = chr(pow(2, y % 6) + 63)
-                if count == 1:
-                    output.write('#%d%c' % (cached_no, c))
-                elif count == 2:
-                    output.write('#%d%c%c' % (cached_no, c, c))
-                    count = 1
-                else:
-                    output.write('#%d!%d%c' % (cached_no, count, c))
-                    count = 1
-                cached_no = color_no
-            if c is not None:
+                    if cached_no == keycolor:
+                        c = 0x3f
+                    else:
+                        c = n + 63
+                    if count == 1:
+                        output.write('#%d%c' % (cached_no, c))
+                    elif count == 2:
+                        output.write('#%d%c%c' % (cached_no, c, c))
+                        count = 1
+                    else:
+                        output.write('#%d!%d%c' % (cached_no, count, c))
+                        count = 1
+                    cached_no = color_no
+            if c != -1:
                 if cached_no == keycolor:
-                    c = '?'
+                    c = 0x3f 
                 if count == 1:
                     output.write('#%d%c' % (cached_no, c))
                 elif count == 2:
@@ -127,33 +129,38 @@ class SixelConverter:
                 else:
                     output.write('#%d!%d%c' % (cached_no, count, c))
             output.write('$')  # write line terminator
-            if y % 6 == 5:
+            if n == 32:
+                n = 1
                 output.write('-')  # write sixel line separator
+            else:
+                n <<= 1
 
     def __write_body_with_alphathreshold(self, output, data, keycolor):
         rawdata = self.rawdata
         height = self.height
         width = self.width
         max_runlength = 255
+        n = 1
         for y in xrange(0, height):
-            cached_no = data[y * width]
-            cached_alpha = rawdata[y * width][3]
+            p = y * width
+            cached_no = data[p]
+            cached_alpha = rawdata[p][3]
             count = 1
-            c = None
+            c = -1
             for x in xrange(0, width):
-                color_no = data[y * width + x]
-                alpha = rawdata[y * width + x][3]
+                color_no = data[p + x]
+                alpha = rawdata[p + x][3]
                 if color_no == cached_no:
                     if alpha == cached_alpha:
                         if count < max_runlength:
                             count += 1
                             continue
                 if cached_no == keycolor:
-                    c = '?'
+                    c = 0x3f
                 elif cached_alpha < self.__alphathreshold:
-                    c = '?'
+                    c = 0x3f
                 else:
-                    c = chr(pow(2, y % 6) + 63)
+                    c = n + 0x3f
                 if count == 1:
                     output.write('#%d%c' % (cached_no, c))
                 elif count == 2:
@@ -164,9 +171,9 @@ class SixelConverter:
                     count = 1
                 cached_no = color_no
                 cached_alpha = alpha
-            if c is not None:
+            if c != -1:
                 if cached_no == keycolor:
-                    c = '?'
+                    c = 0x3f 
                 if count == 1:
                     output.write('#%d%c' % (cached_no, c))
                 elif count == 2:
@@ -174,8 +181,11 @@ class SixelConverter:
                 else:
                     output.write('#%d!%d%c' % (cached_no, count, c))
             output.write('$')  # write line terminator
-            if y % 6 == 5:
+            if n == 32:
+                n = 1
                 output.write('-')  # write sixel line separator
+            else:
+                n <<= 1
 
     def __write_body_section(self, output):
         data = self.data
