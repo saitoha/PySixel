@@ -219,9 +219,11 @@ class SixelConverter:
 
         return value
 
-    def write(self, output):
-        self.__write_header(output)
+    def write(self, output, bodyonly=False):
+        if not bodyonly:
+            self.__write_header(output)
         self.__write_palette_section(output)
         self.__write_body_section(output)
-        self.__write_terminator(output)
+        if not bodyonly:
+            self.__write_terminator(output)
 

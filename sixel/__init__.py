@@ -114,6 +114,12 @@ def main():
                       default=256,
                       help="Specify number of colors")
 
+    parser.add_option("-b", "--body-only",
+                      action="store_true",
+                      dest="bodyonly",
+                      default=False,
+                      help="Output sixel without header and DCS envelope")
+
     options, args = parser.parse_args()
 
     rcdir = os.path.join(os.getenv("HOME"), ".pysixel")
@@ -167,7 +173,8 @@ def main():
             else:
                 height = int(height) * char_height
                
-    writer = sixel.SixelWriter(f8bit=options.f8bit)
+    writer = sixel.SixelWriter(f8bit=options.f8bit,
+                               bodyonly=options.bodyonly)
 
     if select.select([stdin, ], [], [], 0.0)[0]:
         imagefile = _filenize(stdin)
