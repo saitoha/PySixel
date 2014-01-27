@@ -11,8 +11,8 @@ long_description = open(os.path.join(dirpath, "README.rst")).read()
 
 setup(name                  = 'PySixel',
       version               = __version__,
-      description           = ('Make SIXEL color graphics supported by some '
-                               'terminal emulators(DECTerm/RLogin/mlterm/tanasinn/xterm)'),
+      description           = ('View full-pixel color graphics on SIXEL-supported terminals'
+                               '(xterm/mlterm/DECterm/Reflection/RLogin/tanasinn)'),
       long_description      = long_description,
       py_modules            = ['sixel'],
       ext_modules           = [Extension('sixel_cimpl', sources = ['sixel/sixel_cimpl.c'])],
