@@ -118,9 +118,9 @@ Show sixel in xterm ::
 	$ curl ftp://invisible-island.net/xterm/xterm-301.tgz | tar xz
 	$ cd xterm-301
 	$ ./configure --enable-wide-chars --enable-sixel-graphics --enable-256-color
-    $ make
-    # make install
-	$ xterm -ti vt340 -e 'sixelconv ~/testdir/test.jpg'
+	$ make
+	# make install
+	$ xterm -ti vt340 -e 'sixelconv -n16 ~/testdir/test.jpg'
 
 
 Code Example
