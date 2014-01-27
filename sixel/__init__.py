@@ -36,6 +36,19 @@ except:
 from sixel import SixelWriter, SixelConverter
 from cellsize import CellSizeDetector
 
+
+def _filenize(f):
+    import stat
+
+    mode = os.fstat(f.fileno()).st_mode
+    if stat.S_ISFIFO(mode) or os.isatty(f.fileno()):
+        try:
+            from cStringIO import StringIO
+        except ImportError:
+            from StringIO import StringIO
+        return StringIO(f.read())
+    return f
+
 def main():
 
     parser = optparse.OptionParser()
@@ -157,9 +170,9 @@ def main():
     writer = sixel.SixelWriter(f8bit=options.f8bit)
 
     if select.select([stdin, ], [], [], 0.0)[0]:
-        imagefile = stdin
+        imagefile = _filenize(stdin)
     elif len(args) == 0 or args[0] == '-':
-        imagefile = stdin
+        imagefile = _filenize(stdin)
     else:
         imagefile = args[0]
 
