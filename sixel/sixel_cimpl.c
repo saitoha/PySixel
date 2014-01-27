@@ -774,7 +774,7 @@ static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_8__write_body_with_alph
 static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_10__write_body_section(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_output); /* proto */
 static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_12__write_terminator(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_output); /* proto */
 static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_14getvalue(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_16write(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_output); /* proto */
+static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_16write(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_output, PyObject *__pyx_v_bodyonly); /* proto */
 #if PY_MAJOR_VERSION >= 3
 static char __pyx_k_[] = "\302\220";
 #endif
@@ -847,6 +847,7 @@ static char __pyx_k_prepare[] = "__prepare__";
 static char __pyx_k_rawdata[] = "rawdata";
 static char __pyx_k_ADAPTIVE[] = "ADAPTIVE";
 static char __pyx_k_StringIO[] = "StringIO";
+static char __pyx_k_bodyonly[] = "bodyonly";
 static char __pyx_k_color_no[] = "color_no";
 static char __pyx_k_getvalue[] = "getvalue";
 static char __pyx_k_keycolor[] = "keycolor";
@@ -931,6 +932,7 @@ static PyObject *__pyx_n_s_alphathreshold;
 static PyObject *__pyx_n_s_aspect_ratio;
 static PyObject *__pyx_n_s_b;
 static PyObject *__pyx_n_s_background_option;
+static PyObject *__pyx_n_s_bodyonly;
 static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_s_cStringIO;
 static PyObject *__pyx_n_s_cached_alpha;
@@ -1026,6 +1028,7 @@ static PyObject *__pyx_tuple__26;
 static PyObject *__pyx_tuple__28;
 static PyObject *__pyx_tuple__30;
 static PyObject *__pyx_tuple__32;
+static PyObject *__pyx_tuple__34;
 static PyObject *__pyx_codeobj__16;
 static PyObject *__pyx_codeobj__19;
 static PyObject *__pyx_codeobj__21;
@@ -4803,7 +4806,7 @@ static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_14getvalue(CYTHON_UNUSE
  * 
  *         return value             # <<<<<<<<<<<<<<
  * 
- *     def write(self, output):
+ *     def write(self, output, bodyonly=False):
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_value);
@@ -4839,9 +4842,9 @@ static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_14getvalue(CYTHON_UNUSE
 /* "sixel_cimpl.pyx":222
  *         return value
  * 
- *     def write(self, output):             # <<<<<<<<<<<<<<
- *         self.__write_header(output)
- *         self.__write_palette_section(output)
+ *     def write(self, output, bodyonly=False):             # <<<<<<<<<<<<<<
+ *         if not bodyonly:
+ *             self.__write_header(output)
  */
 
 /* Python wrapper */
@@ -4850,6 +4853,7 @@ static PyMethodDef __pyx_mdef_11sixel_cimpl_14SixelConverter_17write = {__Pyx_NA
 static PyObject *__pyx_pw_11sixel_cimpl_14SixelConverter_17write(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_self = 0;
   PyObject *__pyx_v_output = 0;
+  PyObject *__pyx_v_bodyonly = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4857,12 +4861,14 @@ static PyObject *__pyx_pw_11sixel_cimpl_14SixelConverter_17write(PyObject *__pyx
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("write (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_output,0};
-    PyObject* values[2] = {0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_output,&__pyx_n_s_bodyonly,0};
+    PyObject* values[3] = {0,0,0};
+    values[2] = ((PyObject *)((PyObject *)Py_False));
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
         case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
         case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
         case  0: break;
@@ -4876,42 +4882,53 @@ static PyObject *__pyx_pw_11sixel_cimpl_14SixelConverter_17write(PyObject *__pyx
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_output)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("write", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("write", 0, 2, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  2:
+        if (kw_args > 0) {
+          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_bodyonly);
+          if (value) { values[2] = value; kw_args--; }
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "write") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
-      goto __pyx_L5_argtuple_error;
     } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      switch (PyTuple_GET_SIZE(__pyx_args)) {
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        break;
+        default: goto __pyx_L5_argtuple_error;
+      }
     }
     __pyx_v_self = values[0];
     __pyx_v_output = values[1];
+    __pyx_v_bodyonly = values[2];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("write", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("write", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("sixel_cimpl.SixelConverter.write", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_11sixel_cimpl_14SixelConverter_16write(__pyx_self, __pyx_v_self, __pyx_v_output);
+  __pyx_r = __pyx_pf_11sixel_cimpl_14SixelConverter_16write(__pyx_self, __pyx_v_self, __pyx_v_output, __pyx_v_bodyonly);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_16write(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_output) {
+static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_16write(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_output, PyObject *__pyx_v_bodyonly) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_1;
+  int __pyx_t_2;
   PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4919,98 +4936,126 @@ static PyObject *__pyx_pf_11sixel_cimpl_14SixelConverter_16write(CYTHON_UNUSED P
 
   /* "sixel_cimpl.pyx":223
  * 
- *     def write(self, output):
- *         self.__write_header(output)             # <<<<<<<<<<<<<<
+ *     def write(self, output, bodyonly=False):
+ *         if not bodyonly:             # <<<<<<<<<<<<<<
+ *             self.__write_header(output)
+ *         self.__write_palette_section(output)
+ */
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_bodyonly); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 223; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = ((!__pyx_t_1) != 0);
+  if (__pyx_t_2) {
+
+    /* "sixel_cimpl.pyx":224
+ *     def write(self, output, bodyonly=False):
+ *         if not bodyonly:
+ *             self.__write_header(output)             # <<<<<<<<<<<<<<
  *         self.__write_palette_section(output)
  *         self.__write_body_section(output)
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_SixelConverter__write_header); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 223; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 223; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_output);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_output);
-  __Pyx_GIVEREF(__pyx_v_output);
-  __pyx_t_3 = PyObject_Call(__pyx_t_1, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 223; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-
-  /* "sixel_cimpl.pyx":224
- *     def write(self, output):
- *         self.__write_header(output)
- *         self.__write_palette_section(output)             # <<<<<<<<<<<<<<
- *         self.__write_body_section(output)
- *         self.__write_terminator(output)
- */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_SixelConverter__write_palette_s); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_output);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_output);
-  __Pyx_GIVEREF(__pyx_v_output);
-  __pyx_t_1 = PyObject_Call(__pyx_t_3, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_SixelConverter__write_header); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_INCREF(__pyx_v_output);
+    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_output);
+    __Pyx_GIVEREF(__pyx_v_output);
+    __pyx_t_5 = PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    goto __pyx_L3;
+  }
+  __pyx_L3:;
 
   /* "sixel_cimpl.pyx":225
- *         self.__write_header(output)
- *         self.__write_palette_section(output)
- *         self.__write_body_section(output)             # <<<<<<<<<<<<<<
- *         self.__write_terminator(output)
- * 
+ *         if not bodyonly:
+ *             self.__write_header(output)
+ *         self.__write_palette_section(output)             # <<<<<<<<<<<<<<
+ *         self.__write_body_section(output)
+ *         if not bodyonly:
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_SixelConverter__write_body_sect); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_SixelConverter__write_palette_s); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_INCREF(__pyx_v_output);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_output);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_output);
   __Pyx_GIVEREF(__pyx_v_output);
-  __pyx_t_3 = PyObject_Call(__pyx_t_1, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyObject_Call(__pyx_t_5, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
   /* "sixel_cimpl.pyx":226
+ *             self.__write_header(output)
+ *         self.__write_palette_section(output)
+ *         self.__write_body_section(output)             # <<<<<<<<<<<<<<
+ *         if not bodyonly:
+ *             self.__write_terminator(output)
+ */
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_SixelConverter__write_body_sect); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_INCREF(__pyx_v_output);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_output);
+  __Pyx_GIVEREF(__pyx_v_output);
+  __pyx_t_5 = PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+  /* "sixel_cimpl.pyx":227
  *         self.__write_palette_section(output)
  *         self.__write_body_section(output)
- *         self.__write_terminator(output)             # <<<<<<<<<<<<<<
+ *         if not bodyonly:             # <<<<<<<<<<<<<<
+ *             self.__write_terminator(output)
  * 
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_SixelConverter__write_terminato); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(__pyx_v_output);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_output);
-  __Pyx_GIVEREF(__pyx_v_output);
-  __pyx_t_1 = PyObject_Call(__pyx_t_3, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_bodyonly); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = ((!__pyx_t_2) != 0);
+  if (__pyx_t_1) {
+
+    /* "sixel_cimpl.pyx":228
+ *         self.__write_body_section(output)
+ *         if not bodyonly:
+ *             self.__write_terminator(output)             # <<<<<<<<<<<<<<
+ * 
+ */
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_SixelConverter__write_terminato); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 228; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 228; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_INCREF(__pyx_v_output);
+    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_output);
+    __Pyx_GIVEREF(__pyx_v_output);
+    __pyx_t_3 = PyObject_Call(__pyx_t_5, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 228; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    goto __pyx_L4;
+  }
+  __pyx_L4:;
 
   /* "sixel_cimpl.pyx":222
  *         return value
  * 
- *     def write(self, output):             # <<<<<<<<<<<<<<
- *         self.__write_header(output)
- *         self.__write_palette_section(output)
+ *     def write(self, output, bodyonly=False):             # <<<<<<<<<<<<<<
+ *         if not bodyonly:
+ *             self.__write_header(output)
  */
 
   /* function exit code */
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_AddTraceback("sixel_cimpl.SixelConverter.write", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -5089,6 +5134,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_aspect_ratio, __pyx_k_aspect_ratio, sizeof(__pyx_k_aspect_ratio), 0, 0, 1, 1},
   {&__pyx_n_s_b, __pyx_k_b, sizeof(__pyx_k_b), 0, 0, 1, 1},
   {&__pyx_n_s_background_option, __pyx_k_background_option, sizeof(__pyx_k_background_option), 0, 0, 1, 1},
+  {&__pyx_n_s_bodyonly, __pyx_k_bodyonly, sizeof(__pyx_k_bodyonly), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_s_cStringIO, __pyx_k_cStringIO, sizeof(__pyx_k_cStringIO), 0, 0, 1, 1},
   {&__pyx_n_s_cached_alpha, __pyx_k_cached_alpha, sizeof(__pyx_k_cached_alpha), 0, 0, 1, 1},
@@ -5346,14 +5392,17 @@ static int __Pyx_InitCachedConstants(void) {
   /* "sixel_cimpl.pyx":222
  *         return value
  * 
- *     def write(self, output):             # <<<<<<<<<<<<<<
- *         self.__write_header(output)
- *         self.__write_palette_section(output)
+ *     def write(self, output, bodyonly=False):             # <<<<<<<<<<<<<<
+ *         if not bodyonly:
+ *             self.__write_header(output)
  */
-  __pyx_tuple__32 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_output); if (unlikely(!__pyx_tuple__32)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__32 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_output, __pyx_n_s_bodyonly); if (unlikely(!__pyx_tuple__32)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__32);
   __Pyx_GIVEREF(__pyx_tuple__32);
-  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_tmp_sixel_cimpl_pyx, __pyx_n_s_write, 222, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_tmp_sixel_cimpl_pyx, __pyx_n_s_write, 222, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__34 = PyTuple_Pack(1, ((PyObject *)Py_False)); if (unlikely(!__pyx_tuple__34)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__34);
+  __Pyx_GIVEREF(__pyx_tuple__34);
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5574,12 +5623,13 @@ PyMODINIT_FUNC PyInit_sixel_cimpl(void)
   /* "sixel_cimpl.pyx":222
  *         return value
  * 
- *     def write(self, output):             # <<<<<<<<<<<<<<
- *         self.__write_header(output)
- *         self.__write_palette_section(output)
+ *     def write(self, output, bodyonly=False):             # <<<<<<<<<<<<<<
+ *         if not bodyonly:
+ *             self.__write_header(output)
  */
   __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_11sixel_cimpl_14SixelConverter_17write, 0, __pyx_n_s_SixelConverter_write, NULL, __pyx_n_s_sixel_cimpl, PyModule_GetDict(__pyx_m), ((PyObject *)__pyx_codeobj__33)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_2, __pyx_tuple__34);
   if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_write, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
