@@ -52,13 +52,6 @@ smoketest:
 	$(PYTHON27) $(SETUP_SCRIPT) test
 
 nosetest:
-	if $$(which nosetests); \
-	then \
-	    nosetests --with-doctest \
-	              --with-coverage \
-	              --cover-html \
-	              --cover-package=sskk; \
-	fi
 
 update: build clean test
 	$(PYTHON) $(SETUP_SCRIPT) register

@@ -28,11 +28,6 @@ import optparse
 import select
 import logging
 
-try:
-    from cStringIO import StringIO
-except:
-    from StringIO import StringIO
-
 from sixel import SixelWriter, SixelConverter
 from cellsize import CellSizeDetector
 
@@ -193,5 +188,6 @@ def main():
                 ncolor=int(options.ncolor),
                 alphathreshold=options.alphathreshold,
                 chromakey=options.chromakey) 
+
 if __name__ == '__main__':
     main()
