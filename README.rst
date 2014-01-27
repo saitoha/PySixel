@@ -97,6 +97,8 @@ or ::
   -t ALPHATHRESHOLD, --alpha-threshold=ALPHATHRESHOLD   Alpha threshold for PNG-to-SIXEL image conversion
   -c, --chromakey                                       Enable auto chroma key processing
   -n NCOLOR, --ncolor=NCOLOR                            Specify number of colors
+  -b, --body-only                                       Output sixel without header and DCS envelope
+
 
 Example
 -------
