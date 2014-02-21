@@ -45,7 +45,7 @@ Now SIXEL feature is supported by the following terminals.
 
 - XTerm (compiled with --enable-sixel option)
   You should launch xterm with "-ti 340" option.
-  the SIXEL palette is limited to a maximum of 256 colors.
+  the SIXEL palette is limited to a maximum of 16 colors.
   http://invisible-island.net/xterm/
 
 - DECterm
