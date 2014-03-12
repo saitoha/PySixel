@@ -171,23 +171,26 @@ def main():
     writer = sixel.SixelWriter(f8bit=options.f8bit,
                                bodyonly=options.bodyonly)
 
-    if select.select([stdin, ], [], [], 0.0)[0]:
-        imagefile = _filenize(stdin)
-    elif len(args) == 0 or args[0] == '-':
-        imagefile = _filenize(stdin)
-    else:
-        imagefile = args[0]
+    try:
+        if select.select([stdin, ], [], [], 0.0)[0]:
+            imagefile = _filenize(stdin)
+        elif len(args) == 0 or args[0] == '-':
+            imagefile = _filenize(stdin)
+        else:
+            imagefile = args[0]
 
-    writer.draw(imagefile,
-                output=sys.stdout,
-                absolute=options.fabsolute,
-                x=left,
-                y=top,
-                w=width,
-                h=height,
-                ncolor=int(options.ncolor),
-                alphathreshold=options.alphathreshold,
-                chromakey=options.chromakey) 
+        writer.draw(imagefile,
+                    output=sys.stdout,
+                    absolute=options.fabsolute,
+                    x=left,
+                    y=top,
+                    w=width,
+                    h=height,
+                    ncolor=int(options.ncolor),
+                    alphathreshold=options.alphathreshold,
+                    chromakey=options.chromakey) 
+    except KeyboardInterrupt:
+        pass
 
 if __name__ == '__main__':
     main()
