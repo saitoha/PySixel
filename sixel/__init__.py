@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
-__author__  = "Hayaki Saito (user@zuse.jp)"
+__author__ = "Hayaki Saito (user@zuse.jp)"
 __version__ = "0.1.7"
 __license__ = "GPL v3"
 
@@ -28,8 +28,8 @@ import optparse
 import select
 import logging
 
-from sixel import SixelWriter, SixelConverter
 from cellsize import CellSizeDetector
+from sixel import SixelWriter
 
 
 def _filenize(f):
@@ -44,31 +44,32 @@ def _filenize(f):
         return StringIO(f.read())
     return f
 
+
 def main():
 
     parser = optparse.OptionParser()
-    
+
     parser.add_option("-8", "--8bit-mode",
-              action="store_true",
-              dest="f8bit",
-              help="Generate a sixel image for 8bit terminal or printer")
-    
+                      action="store_true",
+                      dest="f8bit",
+                      help="Generate a sixel image for 8bit terminal or printer")
+
     parser.add_option("-7", "--7bit-mode",
-              action="store_false",
-              dest="f8bit",
-              help="Generate a sixel image for 7bit terminal or printer")
- 
+                      action="store_false",
+                      dest="f8bit",
+                      help="Generate a sixel image for 7bit terminal or printer")
+
     parser.add_option("-r", "--relative-position",
                       action="store_false",
                       default=False,
                       dest="fabsolute",
                       help="Treat specified position as relative one")
-  
+
     parser.add_option("-a", "--absolute-position",
                       action="store_true",
                       dest="fabsolute",
                       help="Treat specified position as absolute one")
-     
+
     parser.add_option("-x", "--left",
                       action="store",
                       dest="left",
@@ -78,12 +79,12 @@ def main():
                       action="store",
                       dest="top",
                       help="Top position in cell size, or pixel size with unit 'px'")
-     
+
     parser.add_option("-w", "--width",
                       action="store",
                       dest="width",
                       help="Width in cell size, or pixel size with unit 'px'")
-     
+
     parser.add_option("-e", "--height",
                       action="store",
                       dest="height",
@@ -143,33 +144,33 @@ def main():
         if not left is None:
             pos = left.find("px")
             if pos > 0:
-                left = int(left[:pos]) / char_width 
+                left = int(left[:pos]) / char_width
             else:
-                left = int(left) 
+                left = int(left)
 
         if not top is None:
             pos = top.find("px")
             if pos > 0:
-                top = int(top[:pos]) / char_width 
+                top = int(top[:pos]) / char_width
             else:
-                top = int(top) 
- 
+                top = int(top)
+
         if not width is None:
             pos = width.find("px")
             if pos > 0:
-                width = int(width[:pos]) 
+                width = int(width[:pos])
             else:
                 width = int(width) * char_width
- 
+
         if not height is None:
             pos = height.find("px")
             if pos > 0:
-                height = int(height[:pos]) 
+                height = int(height[:pos])
             else:
                 height = int(height) * char_height
-               
-    writer = sixel.SixelWriter(f8bit=options.f8bit,
-                               bodyonly=options.bodyonly)
+
+    writer = SixelWriter(f8bit=options.f8bit,
+                         bodyonly=options.bodyonly)
 
     try:
         if select.select([stdin, ], [], [], 0.0)[0]:
@@ -188,7 +189,7 @@ def main():
                     h=height,
                     ncolor=int(options.ncolor),
                     alphathreshold=options.alphathreshold,
-                    chromakey=options.chromakey) 
+                    chromakey=options.chromakey)
     except KeyboardInterrupt:
         pass
 
