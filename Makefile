@@ -38,7 +38,7 @@ uninstall:
 	done
 
 clean:
-	for name in dist cover build *.egg-info htmlcov; \
+	for name in dist cover build *.egg-info *.egg htmlcov; \
 		do find . -type d -name $$name || true; \
 	done | xargs $(RM)
 	for name in *.pyc *.o .coverage; \
