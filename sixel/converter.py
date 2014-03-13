@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
+
 class SixelConverter:
 
     def __init__(self, file,
@@ -26,10 +27,13 @@ class SixelConverter:
                  h=None,
                  ncolor=256,
                  alphathreshold=0,
-                 chromakey=False):
+                 chromakey=False,
+                 fast=True):
 
         self.__alphathreshold = alphathreshold
         self.__chromakey = chromakey
+        self._slots = [0] * 257
+        self._fast = fast
 
         if ncolor >= 256:
             ncolor = 256
@@ -52,20 +56,20 @@ class SixelConverter:
         image = image.convert("RGB").convert("P",
                                              palette=Image.ADAPTIVE,
                                              colors=ncolor)
-        if not (w is None and h is None):
+        if w or h:
             width, height = image.size
-            if w is None:
+            if not w:
                 w = width
-            if h is None:
+            if not h:
                 h = height
             image = image.resize((w, h))
-
-        if alphathreshold > 0:
-            self.rawdata = image.convert("RGBA").getdata()
 
         self.palette = image.getpalette()
         self.data = image.getdata()
         self.width, self.height = image.size
+
+        if alphathreshold > 0:
+            self.rawdata = Image.open(file).convert("RGBA").getdata()
 
     def __write_header(self, output):
         # start Device Control String (DCS)
@@ -78,7 +82,9 @@ class SixelConverter:
         else:
             background_option = 1
         dpi = 75  # dummy value
-        output.write('%d;%d;%dq"1;1' % (aspect_ratio, background_option, dpi))
+        template = '%d;%d;%dq"1;1;%d;%d'
+        args = (aspect_ratio, background_option, dpi, self.width, self.height)
+        output.write(template % args)
 
     def __write_palette_section(self, output):
 
@@ -93,6 +99,60 @@ class SixelConverter:
             output.write('#%d;2;%d;%d;%d' % (no, r, g, b))
 
     def __write_body_without_alphathreshold(self, output, data, keycolor):
+        for n in xrange(0, self._ncolor):
+            palette = self.palette
+            r = palette[n * 3 + 0] * 100 / 256
+            g = palette[n * 3 + 1] * 100 / 256
+            b = palette[n * 3 + 2] * 100 / 256
+            output.write('#%d;2;%d;%d;%d\n' % (n, r, g, b))
+        height = self.height
+        width = self.width
+        for y in xrange(0, height, 6):
+            if height - y <= 5:
+                band = height - y
+            else:
+                band = 6
+            buf = []
+            set_ = set()
+
+            def add_node(n, s):
+                node = []
+                cache = 0
+                count = 0
+                if s:
+                    node.append((0, s))
+                for x in xrange(s, width):
+                    count += 1
+                    p = y * width + x
+                    six = 0
+                    for i in xrange(0, band):
+                        d = data[p + width * i]
+                        if d == n:
+                            six |= 1 << i
+                        elif not d in set_:
+                            set_.add(d)
+                            add_node(d, x)
+                    if six != cache:
+                        node.append([cache, count])
+                        count = 0
+                        cache = six
+                if cache != 0:
+                    node.append([cache, count])
+                buf.append((n, node))
+
+            add_node(data[y * width], 0)
+
+            for n, node in buf:
+                output.write("#%d\n" % n)
+                for six, count in node:
+                    if count < 4:
+                        output.write(chr(0x3f + six) * count)
+                    else:
+                        output.write('!%d%c' % (count, 0x3f + six))
+                output.write("$\n")
+            output.write("-\n")
+
+    def __write_body_without_alphathreshold_fast(self, output, data, keycolor):
         height = self.height
         width = self.width
         n = 1
@@ -103,37 +163,49 @@ class SixelConverter:
             c = -1
             for x in xrange(0, width):
                 color_no = data[p + x]
-                if color_no == cached_no and count < 255:
+                if color_no == cached_no:  # and count < 255:
                     count += 1
                 else:
                     if cached_no == keycolor:
                         c = 0x3f
                     else:
-                        c = n + 63
-                    if count == 1:
-                        output.write('#%d%c' % (cached_no, c))
-                    elif count == 2:
-                        output.write('#%d%c%c' % (cached_no, c, c))
-                        count = 1
+                        c = 0x3f + n
+                        if self._slots[cached_no] == 0:
+                            palette = self.palette
+                            r = palette[cached_no * 3 + 0] * 100 / 256
+                            g = palette[cached_no * 3 + 1] * 100 / 256
+                            b = palette[cached_no * 3 + 2] * 100 / 256
+                            self._slots[cached_no] = 1
+                            output.write('#%d;2;%d;%d;%d' % (cached_no, r, g, b))
+                        output.write('#%d' % cached_no)
+                    if count < 3:
+                        output.write(chr(c) * count)
                     else:
-                        output.write('#%d!%d%c' % (cached_no, count, c))
-                        count = 1
+                        output.write('!%d%c' % (count, c))
+                    count = 1
                     cached_no = color_no
-            if c != -1:
+            if c != -1 and count > 1:
                 if cached_no == keycolor:
-                    c = 0x3f 
-                if count == 1:
-                    output.write('#%d%c' % (cached_no, c))
-                elif count == 2:
-                    output.write('#%d%c%c' % (cached_no, c, c))
+                    c = 0x3f
                 else:
-                    output.write('#%d!%d%c' % (cached_no, count, c))
-            output.write('$')  # write line terminator
+                    if self._slots[cached_no] == 0:
+                        palette = self.palette
+                        r = palette[cached_no * 3 + 0] * 100 / 256
+                        g = palette[cached_no * 3 + 1] * 100 / 256
+                        b = palette[cached_no * 3 + 2] * 100 / 256
+                        self._slots[cached_no] = 1
+                        output.write('#%d;2;%d;%d;%d' % (cached_no, r, g, b))
+                    output.write('#%d' % cached_no)
+                if count < 3:
+                    output.write(chr(c) * count)
+                else:
+                    output.write('!%d%c' % (count, c))
             if n == 32:
                 n = 1
                 output.write('-')  # write sixel line separator
             else:
                 n <<= 1
+                output.write('$')  # write line terminator
 
     def __write_body_with_alphathreshold(self, output, data, keycolor):
         rawdata = self.rawdata
@@ -173,7 +245,7 @@ class SixelConverter:
                 cached_alpha = alpha
             if c != -1:
                 if cached_no == keycolor:
-                    c = 0x3f 
+                    c = 0x3f
                 if count == 1:
                     output.write('#%d%c' % (cached_no, c))
                 elif count == 2:
@@ -194,7 +266,10 @@ class SixelConverter:
         else:
             keycolor = -1
         if self.__alphathreshold == 0:
-            self.__write_body_without_alphathreshold(output, data, keycolor)
+            if self._fast:
+                self.__write_body_without_alphathreshold_fast(output, data, keycolor)
+            else:
+                self.__write_body_without_alphathreshold(output, data, keycolor)
         else:
             self.__write_body_with_alphathreshold(output, data, keycolor)
 
@@ -222,8 +297,6 @@ class SixelConverter:
     def write(self, output, bodyonly=False):
         if not bodyonly:
             self.__write_header(output)
-        self.__write_palette_section(output)
         self.__write_body_section(output)
         if not bodyonly:
             self.__write_terminator(output)
-

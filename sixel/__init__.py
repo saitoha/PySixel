@@ -116,6 +116,18 @@ def main():
                       default=False,
                       help="Output sixel without header and DCS envelope")
 
+    parser.add_option("-f", "--fast",
+                      action="store_true",
+                      dest="fast",
+                      default=True,
+                      help="The speed priority mode (default)")
+
+    parser.add_option("-s", "--size",
+                      action="store_false",
+                      dest="fast",
+                      default=True,
+                      help="The size priority mode")
+
     options, args = parser.parse_args()
 
     rcdir = os.path.join(os.getenv("HOME"), ".pysixel")
@@ -189,7 +201,8 @@ def main():
                     h=height,
                     ncolor=int(options.ncolor),
                     alphathreshold=options.alphathreshold,
-                    chromakey=options.chromakey)
+                    chromakey=options.chromakey,
+                    fast=options.fast)
     except KeyboardInterrupt:
         pass
 

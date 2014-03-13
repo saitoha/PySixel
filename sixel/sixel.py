@@ -27,15 +27,16 @@ except ImportError, e:
     logging.exception(e)
     from converter import SixelConverter
 
+
 class SixelWriter:
-    
+
     def __init__(self, f8bit=False, bodyonly=False):
         self.f8bit = f8bit
         self._bodyonly = bodyonly
         if f8bit:  # 8bit mode
-            self.CSI='\x9b'
+            self.CSI = '\x9b'
         else:
-            self.CSI='\x1b['
+            self.CSI = '\x1b['
 
     def save_position(self, output):
         if not self._bodyonly:
@@ -77,7 +78,8 @@ class SixelWriter:
              h=None,
              ncolor=256,
              alphathreshold=0,
-             chromakey=False):
+             chromakey=False,
+             fast=True):
 
         try:
             filename.seek(0)
@@ -98,10 +100,9 @@ class SixelWriter:
                                              h,
                                              ncolor,
                                              alphathreshold=alphathreshold,
-                                             chromakey=chromakey)
+                                             chromakey=chromakey,
+                                             fast=fast)
             sixel_converter.write(output, bodyonly=self._bodyonly)
 
         finally:
             self.restore_position(output)
-        
-
