@@ -23,6 +23,7 @@ import os
 import termios
 import select
 
+
 class CellSizeDetector:
 
     def __set_raw(self):
@@ -30,29 +31,29 @@ class CellSizeDetector:
         backup = termios.tcgetattr(fd)
         try:
             new = termios.tcgetattr(fd)
-            new[0] = 0 # c_iflag = 0
-    #        new[3] = 0 # c_lflag = 0
-            new[3] = new[3] &~ (termios.ECHO | termios.ICANON)
+            new[0] = 0  # c_iflag = 0
+            new[3] = 0  # c_lflag = 0
+            new[3] = new[3] & ~(termios.ECHO | termios.ICANON)
             termios.tcsetattr(fd, termios.TCSANOW, new)
         except Exception:
             termios.tcsetattr(fd, termios.TCSANOW, backup)
         return backup
-    
+
     def __reset_raw(self, old):
         fd = sys.stdin.fileno()
         termios.tcsetattr(fd, termios.TCSAFLUSH, old)
-    
+
     def __get_report(self, query):
         result = ''
         fd = sys.stdin.fileno()
         rfds = [fd]
         wfds = []
         xfds = []
-    
+
         sys.stdout.write(query)
         sys.stdout.flush()
-    
-        rfd, wfd, xfd = select.select(rfds, wfds, xfds, 2)
+
+        rfd, wfd, xfd = select.select(rfds, wfds, xfds, 0.5)
         if rfd:
             result = os.read(fd, 1024)
             return result[:-1].split(';')[1:]
@@ -61,14 +62,12 @@ class CellSizeDetector:
     def get_size(self):
 
         backup_termios = self.__set_raw()
-        try: 
+        try:
             height, width = self.__get_report("\x1b[14t")
             row, column = self.__get_report("\x1b[18t")
-            
+
             char_width = int(width) / int(column)
             char_height = int(height) / int(row)
-        finally: 
+        finally:
             self.__reset_raw(backup_termios)
         return char_width, char_height
-
-
