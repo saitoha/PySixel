@@ -98,6 +98,8 @@ or ::
   -c, --chromakey                                       Enable auto chroma key processing
   -n NCOLOR, --ncolor=NCOLOR                            Specify number of colors
   -b, --body-only                                       Output sixel without header and DCS envelope
+  -f, --fast                                            The speed priority mode (default)
+  -s, --size                                            The size priority mode
 
 
 Example
