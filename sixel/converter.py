@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # ***** BEGIN LICENSE BLOCK *****
-# Copyright (C) 2012  Hayaki Saito <user@zuse.jp>
+# Copyright (C) 2012-2014  Hayaki Saito <user@zuse.jp>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

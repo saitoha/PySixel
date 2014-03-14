@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # ***** BEGIN LICENSE BLOCK *****
-# Copyright (C) 2012  Hayaki Saito <user@zuse.jp>
+# Copyright (C) 2012-2014  Hayaki Saito <user@zuse.jp>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 # ***** END LICENSE BLOCK *****
 
 __author__ = "Hayaki Saito (user@zuse.jp)"
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 __license__ = "GPL v3"
 
 import os
@@ -30,6 +30,23 @@ import logging
 
 from cellsize import CellSizeDetector
 from sixel import SixelWriter
+
+license_text = """
+Copyright (C) 2012-2014  Hayaki Saito <user@zuse.jp>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 
 def _filenize(f):
@@ -128,7 +145,17 @@ def main():
                       default=True,
                       help="The size priority mode")
 
+    parser.add_option("-v", "--version",
+                      action="store_true",
+                      dest="version",
+                      default=False,
+                      help="Show version")
+
     options, args = parser.parse_args()
+
+    if options.version:
+        print license_text
+        sys.exit(0)
 
     rcdir = os.path.join(os.getenv("HOME"), ".pysixel")
     logdir = os.path.join(rcdir, "log")
