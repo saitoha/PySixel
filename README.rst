@@ -11,6 +11,9 @@ SIXEL is one of image formats for terminal imaging introduced by DEC VT series.
 SIXEL image data scheme is represented as a terminal-friendly escape sequence.
 So if you want to show a SIXEL image file, all you have to do is "cat" it to your terminal. 
 
+*See also more faster high quality C implementation*
+libsixel: https://github.com/saitoha/libsixel
+
 .. image:: http://zuse.jp/misc/sixel_hikari.png
    :width: 640
 
