@@ -4,7 +4,7 @@ pysixel
 What is SIXEL?
 --------------
 
-.. image:: http://zuse.jp/misc/sixel_gnuplot.png
+.. image:: https://raw.githubusercontent.com/saitoha/PySIXEL/data/data/sixel_gnuplot.png
    :width: 640
 
 SIXEL is one of image formats for terminal imaging introduced by DEC VT series.
@@ -14,14 +14,14 @@ So if you want to show a SIXEL image file, all you have to do is "cat" it to you
 *See also more faster high quality C implementation*
 libsixel: https://github.com/saitoha/libsixel
 
-.. image:: http://zuse.jp/misc/sixel_hikari.png
+.. image:: https://raw.githubusercontent.com/saitoha/PySIXEL/data/data/sixel_hikari.png
    :width: 640
 
 I heard SIXEL was supported by some old terminal applications, such as SAS, WordPerfect.
 
 Nowadays netpbm and Gnuplot support this.
 
-.. image:: http://zuse.jp/misc/sixel_ls.png
+.. image:: https://raw.githubusercontent.com/saitoha/PySIXEL/data/data/sixel_ls.png
    :width: 640
 
 
@@ -39,7 +39,7 @@ Now SIXEL feature is supported by the following terminals.
 
 - tanasinn (Works with firefox)
 
-  http://zuse.jp/tanasinn/
+  http://github.com/saitoha/tanasinn/
 
 - mlterm
 
