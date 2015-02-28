@@ -18,6 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
+import sys
+if sys.version_info[0] == 3:
+    xrange = range
+del sys
+
 
 class SixelConverter:
 

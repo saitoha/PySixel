@@ -28,8 +28,8 @@ import optparse
 import select
 import logging
 
-from cellsize import CellSizeDetector
-from sixel import SixelWriter
+from .cellsize import CellSizeDetector
+from .sixel import SixelWriter
 
 license_text = """
 Copyright (C) 2012-2014  Hayaki Saito <user@zuse.jp>
@@ -154,7 +154,7 @@ def main():
     options, args = parser.parse_args()
 
     if options.version:
-        print license_text
+        print(license_text)
         sys.exit(0)
 
     rcdir = os.path.join(os.getenv("HOME"), ".pysixel")
