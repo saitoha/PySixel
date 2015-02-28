@@ -2,7 +2,7 @@
 PACKAGE_NAME=PySixel
 DEPENDENCIES=Pillow
 PYTHON=python
-PYTHON26=python2.6
+PYTHON26=python2.7
 PYTHON27=python2.7
 SETUP_SCRIPT=setup.py
 RM=rm -rf
