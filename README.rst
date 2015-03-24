@@ -141,11 +141,17 @@ Code Example
 
 Dependency
 ----------
+
  - Pillow
    https://github.com/python-imaging/Pillow
 
  - Python imageloader module 
    https://pypi.python.org/pypi/imageloader
+
+Contributer
+-----------
+
+  - @cocuh (Python3 support)
 
 Reference
 ---------
