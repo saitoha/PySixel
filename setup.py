@@ -17,7 +17,7 @@ if os.uname()[0] == 'Darwin':
 setup(name                  = 'PySixel',
       version               = __version__,
       description           = ('View full-pixel color graphics on SIXEL-supported terminals'
-                               '(xterm/mlterm/DECterm/Reflection/RLogin/tanasinn)'),
+                               '(xterm/mlterm/DECterm/Reflection/RLogin/tanasinn/yaft)'),
       long_description      = long_description,
       py_modules            = ['sixel'],
       ext_modules           = [Extension('sixel_cimpl', sources = ['sixel/sixel_cimpl.c'], extra_compile_args = extra_args)],
