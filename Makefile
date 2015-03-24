@@ -2,8 +2,6 @@
 PACKAGE_NAME=PySixel
 DEPENDENCIES=Pillow
 PYTHON=python
-PYTHON26=python2.7
-PYTHON27=python2.7
 SETUP_SCRIPT=setup.py
 RM=rm -rf
 PIP=pip
@@ -15,8 +13,7 @@ build: smoketest
 	ln -f sixel/converter.py /tmp/sixel_cimpl.pyx
 	$(CYTHON) /tmp/sixel_cimpl.pyx -o sixel/sixel_cimpl.c
 	$(PYTHON) $(SETUP_SCRIPT) sdist
-	$(PYTHON26) $(SETUP_SCRIPT) bdist_egg
-	$(PYTHON27) $(SETUP_SCRIPT) bdist_egg
+	$(PYTHON) $(SETUP_SCRIPT) bdist_egg
 
 setup_environment:
 	if test -d tools; do \
@@ -48,20 +45,17 @@ clean:
 test: smoketest nosetest
 
 smoketest:
-	$(PYTHON26) $(SETUP_SCRIPT) test
-	$(PYTHON27) $(SETUP_SCRIPT) test
+	$(PYTHON) $(SETUP_SCRIPT) test
 
 nosetest:
 
 update: build clean test
 	$(PYTHON) $(SETUP_SCRIPT) register
 	$(PYTHON) $(SETUP_SCRIPT) sdist upload
-	$(PYTHON26) $(SETUP_SCRIPT) bdist_egg upload
-	$(PYTHON27) $(SETUP_SCRIPT) bdist_egg upload
+	$(PYTHON) $(SETUP_SCRIPT) bdist_egg upload
 
 cleanupdate: update
 	ssh zuse.jp "rm -rf $(PACKAGE_NAME)"
 	ssh zuse.jp "git clone git@github.com:saitoha/$(PACKAGE_NAME) --recursive"
-	#ssh zuse.jp "cd $(PACKAGE_NAME) && $(PYTHON26) $(SETUP_SCRIPT) bdist_egg upload"
-	ssh zuse.jp "cd $(PACKAGE_NAME) && $(PYTHON27) $(SETUP_SCRIPT) bdist_egg upload"
+	ssh zuse.jp "cd $(PACKAGE_NAME) && $(PYTHON) $(SETUP_SCRIPT) bdist_egg upload"
 
