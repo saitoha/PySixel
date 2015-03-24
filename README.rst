@@ -148,7 +148,7 @@ Dependency
  - Python imageloader module 
    https://pypi.python.org/pypi/imageloader
 
-Contributer
+Contributors
 -----------
 
   - @cocuh (Python3 support)
