@@ -23,9 +23,9 @@ import os
 import logging
 try:
     from sixel_cimpl import SixelConverter
-except ImportError, e:
+except ImportError as e:
     logging.exception(e)
-    from converter import SixelConverter
+    from .converter import SixelConverter
 
 
 class SixelWriter:
