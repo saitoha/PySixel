@@ -19,7 +19,7 @@
 # ***** END LICENSE BLOCK *****
 
 __author__ = "Hayaki Saito (user@zuse.jp)"
-__version__ = "0.1.11"
+__version__ = "0.2.0"
 __license__ = "GPL v3"
 
 import os
@@ -55,9 +55,12 @@ def _filenize(f):
     mode = os.fstat(f.fileno()).st_mode
     if stat.S_ISFIFO(mode) or os.isatty(f.fileno()):
         try:
-            from cStringIO import StringIO
+            from io import StringIO
         except ImportError:
-            from StringIO import StringIO
+            try:
+                from cStringIO import StringIO
+            except ImportError:
+                from StringIO import StringIO
         return StringIO(f.read())
     return f
 

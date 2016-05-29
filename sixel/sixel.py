@@ -21,11 +21,11 @@
 import sys
 import os
 import logging
-try:
-    from sixel_cimpl import SixelConverter
-except ImportError as e:
-    logging.exception(e)
-    from .converter import SixelConverter
+#try:
+#    from sixel_cimpl import SixelConverter
+#except ImportError as e:
+#    logging.exception(e)
+from .converter import SixelConverter
 
 
 class SixelWriter:

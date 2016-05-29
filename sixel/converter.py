@@ -30,18 +30,16 @@ class SixelConverter:
                  f8bit=False,
                  w=None,
                  h=None,
-                 ncolor=256,
+                 ncolor=255,
                  alphathreshold=0,
                  chromakey=False,
                  fast=True):
 
         self.__alphathreshold = alphathreshold
         self.__chromakey = chromakey
-        self._slots = [0] * 257
-        self._fast = fast
 
-        if ncolor >= 256:
-            ncolor = 256
+        if ncolor >= 255:
+            ncolor = 255
 
         self._ncolor = ncolor
 
@@ -91,178 +89,141 @@ class SixelConverter:
         args = (aspect_ratio, background_option, dpi, self.width, self.height)
         output.write(template % args)
 
-    def __write_palette_section(self, output):
-
-        palette = self.palette
-
-        # write palette section
-        for i in xrange(0, self._ncolor * 3, 3):
-            no = i / 3
-            r = palette[i + 0] * 100 / 256
-            g = palette[i + 1] * 100 / 256
-            b = palette[i + 2] * 100 / 256
-            output.write('#%d;2;%d;%d;%d' % (no, r, g, b))
-
     def __write_body_without_alphathreshold(self, output, data, keycolor):
-        for n in xrange(0, self._ncolor):
+        height = self.height
+        width = self.width
+        nc = self._ncolor
+        for n in xrange(0, nc):
             palette = self.palette
             r = palette[n * 3 + 0] * 100 / 256
             g = palette[n * 3 + 1] * 100 / 256
             b = palette[n * 3 + 2] * 100 / 256
-            output.write('#%d;2;%d;%d;%d\n' % (n, r, g, b))
-        height = self.height
-        width = self.width
-        for y in xrange(0, height, 6):
-            if height - y <= 5:
-                band = height - y
-            else:
-                band = 6
-            buf = []
-            set_ = set()
-
-            def add_node(n, s):
-                node = []
-                cache = 0
-                count = 0
-                if s:
-                    node.append((0, s))
-                for x in xrange(s, width):
-                    count += 1
-                    p = y * width + x
-                    six = 0
-                    for i in xrange(0, band):
-                        d = data[p + width * i]
-                        if d == n:
-                            six |= 1 << i
-                        elif not d in set_:
-                            set_.add(d)
-                            add_node(d, x)
-                    if six != cache:
-                        node.append([cache, count])
-                        count = 0
-                        cache = six
-                if cache != 0:
-                    node.append([cache, count])
-                buf.append((n, node))
-
-            add_node(data[y * width], 0)
-
-            for n, node in buf:
-                output.write("#%d\n" % n)
-                for six, count in node:
-                    if count < 4:
-                        output.write(chr(0x3f + six) * count)
-                    else:
-                        output.write('!%d%c' % (count, 0x3f + six))
-                output.write("$\n")
-            output.write("-\n")
-
-    def __write_body_without_alphathreshold_fast(self, output, data, keycolor):
-        height = self.height
-        width = self.width
-        n = 1
-        for y in xrange(0, height):
-            p = y * width
-            cached_no = data[p]
-            count = 1
-            c = -1
-            for x in xrange(0, width):
-                color_no = data[p + x]
-                if color_no == cached_no:  # and count < 255:
-                    count += 1
-                else:
-                    if cached_no == keycolor:
-                        c = 0x3f
-                    else:
-                        c = 0x3f + n
-                        if self._slots[cached_no] == 0:
-                            palette = self.palette
-                            r = palette[cached_no * 3 + 0] * 100 / 256
-                            g = palette[cached_no * 3 + 1] * 100 / 256
-                            b = palette[cached_no * 3 + 2] * 100 / 256
-                            self._slots[cached_no] = 1
-                            output.write('#%d;2;%d;%d;%d' % (cached_no, r, g, b))
-                        output.write('#%d' % cached_no)
-                    if count < 3:
-                        output.write(chr(c) * count)
-                    else:
-                        output.write('!%d%c' % (count, c))
-                    count = 1
-                    cached_no = color_no
-            if c != -1 and count > 1:
-                if cached_no == keycolor:
-                    c = 0x3f
-                else:
-                    if self._slots[cached_no] == 0:
-                        palette = self.palette
-                        r = palette[cached_no * 3 + 0] * 100 / 256
-                        g = palette[cached_no * 3 + 1] * 100 / 256
-                        b = palette[cached_no * 3 + 2] * 100 / 256
-                        self._slots[cached_no] = 1
-                        output.write('#%d;2;%d;%d;%d' % (cached_no, r, g, b))
-                    output.write('#%d' % cached_no)
-                if count < 3:
-                    output.write(chr(c) * count)
-                else:
-                    output.write('!%d%c' % (count, c))
-            if n == 32:
-                n = 1
-                output.write('-')  # write sixel line separator
-            else:
-                n <<= 1
-                output.write('$')  # write line terminator
+            output.write('#%d;2;%d;%d;%d' % (n, r, g, b))
+        buf = bytearray(width * nc)
+        cset = bytearray(nc)
+        ch0 = 0x6d
+        for z in xrange(0, int((height + 5) / 6)):
+            # DECGNL (-): Graphics Next Line
+            if z > 0:
+                output.write('-')
+            for p in xrange(0, 6):
+                y = z * 6 + p
+                for x in xrange(0, width):
+                    idx = data[y * width + x]
+                    cset[idx] = 0
+                    buf[width * idx + x] |= 1 << p
+            for n in xrange(0, nc):
+                if cset[n] == 0:
+                    cset[n] = 1
+                    # DECGCR ($): Graphics Carriage Return
+                    if ch0 == 0x64:
+                        output.write('$')
+                    # select color (#%d)
+                    output.write('#%d' % n)
+                    cnt = 0
+                    for x in xrange(0, width):
+                        # make sixel character from 6 pixels
+                        ch = buf[width * n + x]
+                        buf[width * n + x] = 0
+                        if ch0 < 0x40 and ch != ch0:
+                            # output sixel character
+                            s = 63 + ch0
+                            while cnt > 255:
+                                cnt -= 255
+                                # DECGRI (!): - Graphics Repeat Introducer
+                                output.write('!255%c' % s)
+                            if cnt < 3:
+                                output.write(chr(s) * cnt)
+                            else:
+                                # DECGRI (!): - Graphics Repeat Introducer
+                                output.write('!%d%c' % (cnt, s))
+                            cnt = 0
+                        ch0 = ch
+                        cnt += 1
+                    if ch0 != 0:
+                        # output sixel character
+                        s = 63 + ch0
+                        while cnt > 255:
+                            cnt -= 255
+                            # DECGRI (!): - Graphics Repeat Introducer
+                            output.write('!255%c' % s)
+                        if cnt < 3:
+                            output.write(chr(s) * cnt)
+                        else:
+                            # DECGRI (!): - Graphics Repeat Introducer
+                            output.write('!%d%c' % (cnt, s))
+                    ch0 = 0x64
 
     def __write_body_with_alphathreshold(self, output, data, keycolor):
+        alphathreshold = self.__alphathreshold
         rawdata = self.rawdata
         height = self.height
         width = self.width
-        max_runlength = 255
-        n = 1
-        for y in xrange(0, height):
-            p = y * width
-            cached_no = data[p]
-            cached_alpha = rawdata[p][3]
-            count = 1
-            c = -1
-            for x in xrange(0, width):
-                color_no = data[p + x]
-                alpha = rawdata[p + x][3]
-                if color_no == cached_no:
-                    if alpha == cached_alpha:
-                        if count < max_runlength:
-                            count += 1
-                            continue
-                if cached_no == keycolor:
-                    c = 0x3f
-                elif cached_alpha < self.__alphathreshold:
-                    c = 0x3f
-                else:
-                    c = n + 0x3f
-                if count == 1:
-                    output.write('#%d%c' % (cached_no, c))
-                elif count == 2:
-                    output.write('#%d%c%c' % (cached_no, c, c))
-                    count = 1
-                else:
-                    output.write('#%d!%d%c' % (cached_no, count, c))
-                    count = 1
-                cached_no = color_no
-                cached_alpha = alpha
-            if c != -1:
-                if cached_no == keycolor:
-                    c = 0x3f
-                if count == 1:
-                    output.write('#%d%c' % (cached_no, c))
-                elif count == 2:
-                    output.write('#%d%c%c' % (cached_no, c, c))
-                else:
-                    output.write('#%d!%d%c' % (cached_no, count, c))
-            output.write('$')  # write line terminator
-            if n == 32:
-                n = 1
-                output.write('-')  # write sixel line separator
-            else:
-                n <<= 1
+        nc = self._ncolor
+        for n in xrange(0, nc):
+            palette = self.palette
+            r = palette[n * 3 + 0] * 100 / 256
+            g = palette[n * 3 + 1] * 100 / 256
+            b = palette[n * 3 + 2] * 100 / 256
+            output.write('#%d;2;%d;%d;%d' % (n + 1, r, g, b))
+        buf = bytearray(width * (nc + 1))
+        cset = bytearray(nc + 1)
+        ch0 = 0x6d
+        for z in xrange(0, int((height + 5) / 6)):
+            # DECGNL (-): Graphics Next Line
+            if z > 0:
+                output.write('-')
+            for p in xrange(0, 6):
+                y = z * 6 + p
+                for x in xrange(0, width):
+                    alpha = rawdata[y * width + x][3]
+                    if alpha > alphathreshold:
+                        idx = data[y * width + x] + 1
+                        cset[idx] = 0
+                    else:
+                        idx = 0
+                    buf[width * idx + x] |= 1 << p
+            for n in xrange(1, nc):
+                if cset[n] == 0:
+                    cset[n] = 1
+                    # DECGCR ($): Graphics Carriage Return
+                    if ch0 == 0x64:
+                        output.write('$')
+                    # select color (#%d)
+                    output.write('#%d' % n)
+                    cnt = 0
+                    for x in xrange(0, width):
+                        # make sixel character from 6 pixels
+                        ch = buf[width * n + x]
+                        buf[width * n + x] = 0
+                        if ch0 < 0x40 and ch != ch0:
+                            # output sixel character
+                            s = 63 + ch0
+                            while cnt > 255:
+                                cnt -= 255
+                                # DECGRI (!): - Graphics Repeat Introducer
+                                output.write('!255%c' % s)
+                            if cnt < 3:
+                                output.write(chr(s) * cnt)
+                            else:
+                                # DECGRI (!): - Graphics Repeat Introducer
+                                output.write('!%d%c' % (cnt, s))
+                            cnt = 0
+                        ch0 = ch
+                        cnt += 1
+                    if ch0 != 0:
+                        # output sixel character
+                        s = 63 + ch0
+                        while cnt > 255:
+                            cnt -= 255
+                            # DECGRI (!): - Graphics Repeat Introducer
+                            output.write('!255%c' % s)
+                        if cnt < 3:
+                            output.write(chr(s) * cnt)
+                        else:
+                            # DECGRI (!): - Graphics Repeat Introducer
+                            output.write('!%d%c' % (cnt, s))
+                    ch0 = 0x64
 
     def __write_body_section(self, output):
         data = self.data
@@ -271,10 +232,7 @@ class SixelConverter:
         else:
             keycolor = -1
         if self.__alphathreshold == 0:
-            if self._fast:
-                self.__write_body_without_alphathreshold_fast(output, data, keycolor)
-            else:
-                self.__write_body_without_alphathreshold(output, data, keycolor)
+            self.__write_body_without_alphathreshold(output, data, keycolor)
         else:
             self.__write_body_with_alphathreshold(output, data, keycolor)
 
@@ -285,9 +243,12 @@ class SixelConverter:
     def getvalue(self):
 
         try:
-            from cStringIO import StringIO
-        except ImportError:
-            from StringIO import StringIO
+            from io import StringIO
+        except:
+            try:
+                from cStringIO import StringIO
+            except ImportError:
+                from StringIO import StringIO
         output = StringIO()
 
         try:
