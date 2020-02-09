@@ -54,10 +54,23 @@ def _filenize(f):
 
     mode = os.fstat(f.fileno()).st_mode
     if stat.S_ISFIFO(mode) or os.isatty(f.fileno()):
+        have_stringio = False
         try:
             from cStringIO import StringIO
+            have_stringio = True
         except ImportError:
+            pass
+        try:    
             from StringIO import StringIO
+            have_stringio = True
+        except ImportError:
+            pass
+        try:
+            from io import StringIO
+            have_stringio = True
+        except ImportError:
+            pass
+        assert have_stringio and "no StringIO package available"
         return StringIO(f.read())
     return f
 

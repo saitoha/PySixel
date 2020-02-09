@@ -394,6 +394,15 @@ static CYTHON_INLINE PyObject* __Pyx_PyUnicode_FromString(char*);
 #define __Pyx_PyByteArray_FromUString(s)   __Pyx_PyByteArray_FromString((char*)s)
 #define __Pyx_PyStr_FromUString(s)     __Pyx_PyStr_FromString((char*)s)
 #define __Pyx_PyUnicode_FromUString(s) __Pyx_PyUnicode_FromString((char*)s)
+#if PY_VERSION_HEX >= 0x03070000
+#define EXC_TYPE(ts) ts->curexc_type
+#define EXC_VALUE(ts) ts->curexc_value
+#define EXC_TRACEBACK(ts) ts->curexc_traceback
+#else
+#define EXC_TYPE(ts) ts->exc_type
+#define EXC_VALUE(ts) ts->exc_value
+#define EXC_TRACEBACK(ts) ts->exc_traceback
+#endif
 #if PY_MAJOR_VERSION < 3
 static CYTHON_INLINE size_t __Pyx_Py_UNICODE_strlen(const Py_UNICODE *u)
 {
@@ -8091,9 +8100,9 @@ static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
 static CYTHON_INLINE void __Pyx_ExceptionSave(PyObject **type, PyObject **value, PyObject **tb) {
 #if CYTHON_COMPILING_IN_CPYTHON
     PyThreadState *tstate = PyThreadState_GET();
-    *type = tstate->exc_type;
-    *value = tstate->exc_value;
-    *tb = tstate->exc_traceback;
+    *type = EXC_TYPE(tstate);
+    *value = EXC_VALUE(tstate);
+    *tb = EXC_TRACEBACK(tstate);
     Py_XINCREF(*type);
     Py_XINCREF(*value);
     Py_XINCREF(*tb);
@@ -8105,12 +8114,12 @@ static void __Pyx_ExceptionReset(PyObject *type, PyObject *value, PyObject *tb) 
 #if CYTHON_COMPILING_IN_CPYTHON
     PyObject *tmp_type, *tmp_value, *tmp_tb;
     PyThreadState *tstate = PyThreadState_GET();
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = type;
-    tstate->exc_value = value;
-    tstate->exc_traceback = tb;
+    tmp_type = EXC_TYPE(tstate);
+    tmp_value = EXC_VALUE(tstate);
+    tmp_tb = EXC_TRACEBACK(tstate);
+    EXC_TYPE(tstate) = type;
+    EXC_VALUE(tstate) = value;
+    EXC_TRACEBACK(tstate) = tb;
     Py_XDECREF(tmp_type);
     Py_XDECREF(tmp_value);
     Py_XDECREF(tmp_tb);
@@ -8153,12 +8162,12 @@ static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb) 
     *value = local_value;
     *tb = local_tb;
 #if CYTHON_COMPILING_IN_CPYTHON
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = local_type;
-    tstate->exc_value = local_value;
-    tstate->exc_traceback = local_tb;
+    tmp_type = EXC_TYPE(tstate);
+    tmp_value = EXC_VALUE(tstate);
+    tmp_tb = EXC_TRACEBACK(tstate);
+    EXC_TYPE(tstate) = local_type;
+    EXC_VALUE(tstate) = local_value;
+    EXC_TRACEBACK(tstate) = local_tb;
     Py_XDECREF(tmp_type);
     Py_XDECREF(tmp_value);
     Py_XDECREF(tmp_tb);
@@ -8951,12 +8960,12 @@ static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value,
     PyObject *tmp_type, *tmp_value, *tmp_tb;
 #if CYTHON_COMPILING_IN_CPYTHON
     PyThreadState *tstate = PyThreadState_GET();
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = *type;
-    tstate->exc_value = *value;
-    tstate->exc_traceback = *tb;
+    tmp_type = EXC_TYPE(tstate);
+    tmp_value = EXC_VALUE(tstate);
+    tmp_tb = EXC_TRACEBACK(tstate);
+    EXC_TYPE(tstate) = *type;
+    EXC_VALUE(tstate) = *value;
+    EXC_TRACEBACK(tstate) = *tb;
 #else
     PyErr_GetExcInfo(&tmp_type, &tmp_value, &tmp_tb);
     PyErr_SetExcInfo(*type, *value, *tb);
