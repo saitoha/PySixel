@@ -1,4 +1,7 @@
 
+2021-02-09 Rolv Erlend Bredesen <rolv.bredesen@gmail.com>
+    * Python3.8 support: Prefixed exc_traceback, exc_value, and exctype with prefix <cur>
+	
 2014-01-26 Hayaki Saito <user@zuse.jp>
 
     * Use alternative C-implemented module if possible
