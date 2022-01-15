@@ -54,6 +54,9 @@ def _filenize(f):
 
     mode = os.fstat(f.fileno()).st_mode
     if stat.S_ISFIFO(mode) or os.isatty(f.fileno()):
+        if sys.version_info.major == 3:
+            import io
+            return io.StringIO(f.read())
         try:
             from cStringIO import StringIO
         except ImportError:
