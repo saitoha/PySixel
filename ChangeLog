@@ -1,5 +1,13 @@
+2022-01-01
+    
+    * Recursion error for python3.9 not resolved
+    
+2022-01-01 Rolv Erlend Bredesen <rolv.bredesen@gmail.com>
 
+    * Bugfix python3: sixelconv console script
+    
 2021-02-09 Rolv Erlend Bredesen <rolv.bredesen@gmail.com>
+
     * Python3.8 support: Prefixed exc_traceback, exc_value, and exc_type with prefix <cur>
 	
 2014-01-26 Hayaki Saito <user@zuse.jp>
